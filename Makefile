@@ -29,7 +29,7 @@ $(OUTPUT): $(PARSER_TAB_C) $(LEX_OUTPUT)
 	$(CC) $(CFLAGS) -o $@ $(PARSER_TAB_C) $(LEX_OUTPUT) -lfl
 
 $(GEN_DIR)/lex.yy.c: $(LEX_FILE)
-	@rm -f $(GEN_DIR)  # Remove if it's a file, not a directory
+	# @rm -f $(GEN_DIR)  # Remove if it's a file, not a directory
 	@mkdir -p $(GEN_DIR)
 	flex -o $(GEN_DIR)/lex.yy.c $(LEX_FILE)
 
