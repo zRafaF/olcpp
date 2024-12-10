@@ -1,47 +1,51 @@
-# Compiler and tools
-FLEX = flex
-BISON = bison
+# Compiler and flags
 CC = gcc
+CFLAGS = -Wall
 
 # Directories
-SRC_DIR = src
+GEN_DIR = gen
 BUILD_DIR = build
 
-# Input files
-LEX_FILE = $(SRC_DIR)/lexical.l
-YACC_FILE = $(SRC_DIR)/parser.y
+# Source files
+LEX_FILE = src/lexical.l
+PARSER_FILE = src/parser.y
 
 # Output files
-LEX_C = $(BUILD_DIR)/lex.yy.c
-YACC_C = $(BUILD_DIR)/parser.c
-YACC_H = $(BUILD_DIR)/parser.h
+LEX_OUTPUT = $(GEN_DIR)/lex.yy.c
+PARSER_TAB_C = $(GEN_DIR)/parser.tab.c
+PARSER_TAB_H = $(GEN_DIR)/parser.tab.h
 
-LEXICAL_OBJ = $(BUILD_DIR)/lexical.o
-PARSER_OBJ = $(BUILD_DIR)/parser.o
+# Final output
+OUTPUT = $(BUILD_DIR)/parser
 
-EXECUTABLE = $(BUILD_DIR)/parser_exec
+# Phony targets (to ensure always run)
+.PHONY: all lexical parser clean run
 
-# Rules
-all: $(EXECUTABLE)
+# Targets
+all: $(OUTPUT)
 
-# Compile lexical analyzer
-lexical: $(LEXICAL_OBJ)
+$(OUTPUT): $(PARSER_TAB_C) $(LEX_OUTPUT)
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -o $@ $(PARSER_TAB_C) $(LEX_OUTPUT) -lfl
 
-$(LEXICAL_OBJ): $(LEX_FILE)
-	mkdir -p $(BUILD_DIR)
-	$(FLEX) -o $(LEX_C) $(LEX_FILE)
+$(GEN_DIR)/lex.yy.c: $(LEX_FILE)
+	@rm -f $(GEN_DIR)  # Remove if it's a file, not a directory
+	@mkdir -p $(GEN_DIR)
+	flex -o $(GEN_DIR)/lex.yy.c $(LEX_FILE)
 
-# Compile parser
-parse: $(PARSER_OBJ)
+$(GEN_DIR)/parser.tab.c $(GEN_DIR)/parser.tab.h: $(PARSER_FILE)
+	@rm -f $(GEN_DIR)  # Remove if it's a file, not a directory
+	@mkdir -p $(GEN_DIR)
+	bison -d -o $(GEN_DIR)/parser.tab.c $(PARSER_FILE)
 
-$(PARSER_OBJ): $(YACC_FILE)
-	mkdir -p $(BUILD_DIR)
-	$(BISON) -d -o $(YACC_C) $(YACC_FILE)
+lexical: $(LEX_OUTPUT)
 
-# Link the final executable
-$(EXECUTABLE): $(LEXICAL_OBJ) $(PARSER_OBJ)
-	$(CC) $(LEXICAL_OBJ) $(PARSER_OBJ) -o $(EXECUTABLE)
+parser: $(PARSER_TAB_C) $(PARSER_TAB_H)
 
-# Clean build files
+# Run target that builds and runs the program with a given file
+run: $(OUTPUT)
+	$(BUILD_DIR)/parser < $(PATH)
+
+# Clean target
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -rf $(GEN_DIR) $(BUILD_DIR)/parser
