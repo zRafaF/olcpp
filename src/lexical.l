@@ -38,17 +38,28 @@
     return STRING_TYPE;
 }
 
+"🔢" {
+    return INT_ARRAY_TYPE;
+}
+
+"⁉️" {
+    return BOOL_TYPE;
+}
+
+"✅" {
+    return BOOL_TRUE;
+}
+
+"❌" {
+    return BOOL_FALSE;
+}
+
 "👉"[^"\n]*"👈" { 
     yylval.str = strdup(yytext); 
     return STRING; 
 }
 
-
 "🪣" {
-    return ARRAY_DECLARATION;
-}
-
-"👜" {
     return VARIABLE_DECLARATION;
 }
 
@@ -74,6 +85,10 @@
 
 "♻" {
     return INTEGER_MODULUS;
+}
+
+"🟰" {
+    return ASSIGN;
 }
 
 
@@ -163,10 +178,7 @@
     return INPUT;
 }
 
-"👅" {
-    return SINGLE_LINE_COMMENT;
-}
-
+"👅".* /* Ignore line comments */;
 
 
 %%
