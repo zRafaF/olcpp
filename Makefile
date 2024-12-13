@@ -22,6 +22,21 @@ PARSER_TAB_H = $(GEN_DIR)/parser.tab.h
 # Final output
 OUTPUT = $(BUILD_DIR)/parser
 
+# Input files
+INPUT := examples/code1.olc
+
+# Intermediate Representation output
+IR_OUTPUT := ir_output/code1.json
+
+
+
+# Echo colors
+COLOR_GREEN=\033[0;32m
+COLOR_RED=\033[0;31m
+COLOR_BLUE=\033[0;34m
+END_COLOR=\033[0m
+
+
 # Phony targets (to ensure always run)
 .PHONY: all lexical parser clean run
 
@@ -48,10 +63,12 @@ parser: $(PARSER_TAB_C) $(PARSER_TAB_H)
 
 # Run target that builds and runs the program with a given file
 run: $(OUTPUT)
-	$(BUILD_DIR)/parser examples/code1.olc intermediate.json
+	$(BUILD_DIR)/parser ${INPUT} ${IR_OUTPUT}
+	@echo "$(COLOR_GREEN)Output written to ${IR_OUTPUT}$(END_COLOR)"
 
 
 
 # Clean target
 clean:
-	rm -rf $(GEN_DIR) $(BUILD_DIR)/parser
+	rm -rf $(GEN_DIR) $(BUILD_DIR)
+	@echo "$(COLOR_GREEN)Removed gen and build directories$(END_COLOR)"

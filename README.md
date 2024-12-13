@@ -70,7 +70,7 @@ make run
 Por padrão, o comando acima irá rodar o compilador no arquivo `examples/code1.olc`. Para rodar o compilador em outro arquivo, utilize o comando:
 
 ```bash
-./build/parser <input_file> <output_file>
+make run INPUT=<arquivo.olc> IR_OUTPUT=<arquivo.json>
 ```
 
 ### Comandos Disponíveis
