@@ -3,33 +3,40 @@
     #include <stdio.h>    // For standard input/output operations
     #include <stdlib.h>   // For memory allocation and general utilities
     #include <stdbool.h>  // For boolean type and constants
-
+    #include "node.h"
 
     extern int yylex();
     extern int yyparse();
     extern FILE* yyin;
-    void yyerror(const char* s);
 
+    extern int yylineno; // Tracks the current line number
+    extern char* yytext; // Last matched token text
+
+    void yyerror(const char* s);
+    Node *root;
 %}
 
 %union {
     int num;          // For integer values
     char *str;        // For string values
     int *array;       // For array of integers
+    Node *node;       // For AST nodes
 }
 
 // Token definitions
-%token END_OF_LINE    // Marks the end of a line
 %token <num> INTEGER  // Integer token with a value
 %token <str> IDENTIFIER  // Identifier and string tokens
 %token <str> STRING  // Identifier and string tokens
+%type <node> program statement_list statement expr term factor
+
+%token END_OF_LINE    // Marks the end of a line
 
 // Keywords and operators used in the language
 %token PROGRAM_BEGIN PROGRAM_END INTEGER_TYPE STRING_TYPE INT_ARRAY_TYPE BOOL_TYPE BOOL_TRUE BOOL_FALSE
 %token VARIABLE_DECLARATION ARRAY_DECLARATION_DIVIDER INTEGER_ADDITION INTEGER_SUBTRACTION INTEGER_MULTIPLICATION
 %token INTEGER_DIVISION INTEGER_MODULUS GREATER_THAN LESS_THAN GREATER_THAN_EQUAL LESS_THAN_EQUAL EQUAL
 %token NOT_EQUAL NEGATION AND OR IF_START IF_END ELSE CONDITION_BEGIN CONDITION_END FOR_BEGIN FOR_END
-%token FOR_CONDITION_SEPARATOR WHILE_BEGIN WHILE_END PRINT INPUT ASSIGN
+%token FOR_CONDITION_SEPARATOR WHILE_BEGIN WHILE_END PRINT INPUT ASSIGN PARENTHESIS_OPEN PARENTHESIS_CLOSE
 
 // Operator precedence
 %left OR
@@ -43,15 +50,48 @@
 // Grammar rules
 %%
 program:
-    PROGRAM_BEGIN END_OF_LINE program_body PROGRAM_END
-    ; // Represents a complete program structure
+    PROGRAM_BEGIN statement_list PROGRAM_END { root = $2; }
+;
 
-program_body:
-    statement
-    | program_body statement
-    | program_body error END_OF_LINE { yyerror("Syntax error in program body"); }
-    ; 
+statement_list:
+    statement_list statement { $$ = $1; Node *last = $1; while (last->next) last = last->next; last->next = $2; }
+    | statement { $$ = $1; }
+;
+
 statement:
+    VARIABLE_DECLARATION IDENTIFIER INTEGER_TYPE ASSIGN expr {
+        $$ = createNode("VARIABLE_DECLARATION", createNode($2, createNode("INTEGER_TYPE", $5, NULL), NULL), NULL);
+    }
+    | IDENTIFIER ASSIGN expr {
+        $$ = createNode("ASSIGN", createNode($1, $3, NULL), NULL);
+    }
+    | expr { $$ = $1; }
+;
+
+expr:
+    expr INTEGER_ADDITION term { $$ = createNode("INTEGER_ADDITION", $1, $3); }
+    | expr INTEGER_SUBTRACTION term { $$ = createNode("INTEGER_SUBTRACTION", $1, $3); }
+    | term { $$ = $1; }
+;
+
+term:
+    term INTEGER_MULTIPLICATION factor { $$ = createNode("INTEGER_MULTIPLICATION", $1, $3); }
+    | term INTEGER_DIVISION factor { $$ = createNode("INTEGER_DIVISION", $1, $3); }
+    | factor { $$ = $1; }
+;
+
+factor:
+    PARENTHESIS_OPEN expr PARENTHESIS_CLOSE { $$ = $2; }
+    | INTEGER {
+        char buffer[12];
+        sprintf(buffer, "%d", $1);
+        $$ = createNode("CONSTANT", createNode(buffer, NULL, NULL), NULL);
+    }
+    | IDENTIFIER { $$ = createNode("VARIABLE", createNode($1, NULL, NULL), NULL); }
+;
+
+
+/* statement:
     var_declaration END_OF_LINE
     | assignment END_OF_LINE
     | condition END_OF_LINE
@@ -178,17 +218,42 @@ print:
 
 input:
     INPUT IDENTIFIER
-    ; // Input statement
+    ; // Input statement */
 
 %%
 
-int main() {
-    yyparse(); // Starts parsing
+int main(int argc, char **argv) {
+    if (argc < 3) {
+        fprintf(stderr, "Usage: %s <input-file> <output-file>\n", argv[0]);
+        return 1;
+    }
+
+    FILE *input = fopen(argv[1], "r");
+    if (!input) {
+        perror("Error opening input file");
+        return 1;
+    }
+    yyin = input;
+
+    FILE *output = fopen(argv[2], "w");
+    if (!output) {
+        perror("Error opening output file");
+        fclose(input);
+        return 1;
+    }
+
+    if (yyparse() == 0 && root) { // Parse the input and build the AST
+        generateIR(root, output); // Generate intermediate representation and write to output
+        freeNode(root); // Free the AST
+    } else {
+        fprintf(stderr, "Parsing failed. See errors above.\n");
+    }
+
+    fclose(input);
+    fclose(output);
     return 0;
 }
 
-void yyerror(const char* s) {
-    fprintf(stderr, "Parse error: %s at line %d, token: %s\n", s);
-    exit(1);
+void yyerror(const char *s) {
+    fprintf(stderr, "Error at line %d: %s near '%s'\n", yylineno, s, yytext);
 }
-

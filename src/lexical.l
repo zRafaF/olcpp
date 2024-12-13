@@ -1,4 +1,5 @@
 %{
+    #include "node.h" // Include the shared header for Node structure and functions
     #include "parser.tab.h"
     #include <stdlib.h>
     #include <string.h>
@@ -15,14 +16,19 @@
     return INTEGER;
 }
 
-\n { return END_OF_LINE; }
+\n+ { /* Ignore whitespace */ }
 
-[ \t]+ { /* Ignore whitespace */ }
+[ \t\n]+ { /* Ignore whitespace */ }
 
-. {
-    yyerror("Invalid character encountered");
-    return 0; // This returns control back to Bison
-}
+[ \r\n]+ { /* Ignore whitespace */ }
+
+
+    /* Ignore comments*/
+"👅".* { /* Do nothing */ }
+
+"("     { return PARENTHESIS_OPEN; }   // Return '(' token
+")"     { return PARENTHESIS_CLOSE; }   // Return ')' token
+
 
 "👍️" { return PROGRAM_BEGIN; }
 "👎️" { return PROGRAM_END; }
@@ -70,8 +76,22 @@
 "💅" { return PRINT; }
 "✍" { return INPUT; }
 
-    /* Ignore comments*/
-"👅".* { /* Do nothing */ }
+[a-zA-Z_][a-zA-Z0-9_]* { // Needs to be declared last
+    yylval.str = strdup(yytext); // Copy the identifier name
+    return IDENTIFIER;          // Return the IDENTIFIER token
+}
+
+[a-zA-Z_] { // Needs to be declared last
+    yylval.str = strdup(yytext); // Copy the identifier name
+    return IDENTIFIER;          // Return the IDENTIFIER token
+}
+
+
+
+. {
+    yyerror("Invalid character encountered");
+    return 0; // This returns control back to Bison
+}
 
 %%
 
