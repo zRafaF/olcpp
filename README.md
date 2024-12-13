@@ -2,6 +2,18 @@
 
 Este repositório contém um compilador simples para a linguagem OLCPP, com ferramentas de análise léxica e sintática para o **Assembly Raposeitor**.
 
+## Pipeline
+
+O compilador é dividido em etapas:
+
+1. Análise Léxica
+2. Análise Sintática
+3. Geração de Código Intermediário
+4. Analisador Semântico
+5. Geração de Código
+
+O código intermediário (IR) é representado através de uma árvore sintática abstrata (AST) em formato `.JSON`. A AST é gerada durante a análise sintática e é utilizada para a análise semântica e geração de código.
+
 ## Requerimentos
 
 - [Unix]: Todo o código foi desenvolvido e testado em um ambiente Unix. Não garantimos que o código funcione em um ambiente Windows.
@@ -47,15 +59,19 @@ make
 
 Este comando irá gerar o compilador em `build/parser`.
 
-### Passo 2: Rodar o compilador
+### Passo 2: Rodar o compilador em um arquivo de exemplo
 
 Após a compilação, o comando `make run` pode ser utilizado para rodar o compilador em um arquivo de código de exemplo. Para isso, use o comando:
 
 ```bash
-make run PATH=examples/code1.olc
+make run
 ```
 
-Você pode substituir `examples/code1.olc` por qualquer outro arquivo `.olc` presente no diretório `examples/`. O parâmetro `PATH` é utilizado para especificar o arquivo de entrada que será processado.
+Por padrão, o comando acima irá rodar o compilador no arquivo `examples/code1.olc`. Para rodar o compilador em outro arquivo, utilize o comando:
+
+```bash
+./build/parser <input_file> <output_file>
+```
 
 ### Comandos Disponíveis
 

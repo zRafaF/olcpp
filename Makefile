@@ -48,7 +48,9 @@ parser: $(PARSER_TAB_C) $(PARSER_TAB_H)
 
 # Run target that builds and runs the program with a given file
 run: $(OUTPUT)
-	$(BUILD_DIR)/parser examples/code1.olc intermediate.ir
+	$(BUILD_DIR)/parser examples/code1.olc intermediate.json
+
+
 
 # Clean target
 clean:
