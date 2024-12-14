@@ -1,6 +1,10 @@
 {
   "files.associations": {
-    "parser.tab.h": "c"
+    "parser.tab.h": "c",
+    "system_error": "c",
+    "type_traits": "c",
+    "xlocnum": "c",
+    "xtr1common": "c"
   },
   "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google,  ColumnLimit: 0, IndentWidth: 4, TabWidth: 4}",
   "cSpell.words": [
