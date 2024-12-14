@@ -29,53 +29,61 @@
 "("     { return PARENTHESIS_OPEN; }   // Return '(' token
 ")"     { return PARENTHESIS_CLOSE; }   // Return ')' token
 
+<<<<<<< HEAD
+=======
+. {
+    yyerror("Invalid character encountered");
+    return 0;
+}
+>>>>>>> 61f240568ca40da017d7b7c7bdb4b4fe0a144b79
 
-"👍️" { return PROGRAM_BEGIN; }
-"👎️" { return PROGRAM_END; }
-"💯" { return INTEGER_TYPE; }
-"🔤" { return STRING_TYPE; }
-"🔢" { return INT_ARRAY_TYPE; }
-"⁉️" { return BOOL_TYPE; }
-"✅" { return BOOL_TRUE; }
-"❌" { return BOOL_FALSE; }
+👍️ { return PROGRAM_BEGIN; }
+👎️ { return PROGRAM_END; }
+💯 { return INTEGER_TYPE; }
+🔤 { return STRING_TYPE; }
+🔢 { return INT_ARRAY_TYPE; }
+⁉️ { return BOOL_TYPE; }
+✅ { return BOOL_TRUE; }
+❌ { return BOOL_FALSE; }
 
-"👉"[^"\n]*"👈" {
+👉[^"\n]*👈 {
     char *temp = strdup(yytext + 2);  // Remove "👉"
     temp[strlen(temp) - 2] = '\0';    // Remove "👈"
     yylval.str = temp;
     return STRING;
 }
 
-"🪣" { return VARIABLE_DECLARATION; }
-"🚬" { return ARRAY_DECLARATION_DIVIDER; }
-"➕" { return INTEGER_ADDITION; }
-"➖" { return INTEGER_SUBTRACTION; }
-"✖" { return INTEGER_MULTIPLICATION; }
-"➗" { return INTEGER_DIVISION; }
-"♻" { return INTEGER_MODULUS; }
-"🟰" { return ASSIGN; }
-"🔼" { return GREATER_THAN; }
-"🔽" { return LESS_THAN; }
-"⏫" { return GREATER_THAN_EQUAL; }
-"⏬" { return LESS_THAN_EQUAL; }
-"🔁" { return EQUAL; }
-"🔀" { return NOT_EQUAL; }
-"❗" { return NEGATION; }
-"🅰" { return AND; }
-"🅾" { return OR; }
-"🤔" { return IF_START; }
-"😬" { return IF_END; }
-"😒" { return ELSE; }
-"🫸" { return CONDITION_BEGIN; }
-"🫷" { return CONDITION_END; }
-"🐣" { return FOR_BEGIN; }
-"🐥" { return FOR_END; }
-"🚭" { return FOR_CONDITION_SEPARATOR; }
-"🐳" { return WHILE_BEGIN; }
-"🐋" { return WHILE_END; }
-"💅" { return PRINT; }
-"✍" { return INPUT; }
+🪣 { return VARIABLE_DECLARATION; }
+🚬 { return ARRAY_DECLARATION_DIVIDER; }
+➕ { return INTEGER_ADDITION; }
+➖ { return INTEGER_SUBTRACTION; }
+✖ { return INTEGER_MULTIPLICATION; }
+➗ { return INTEGER_DIVISION; }
+♻ { return INTEGER_MODULUS; }
+🟰 { return ASSIGN; }
+🔼 { return GREATER_THAN; }
+🔽 { return LESS_THAN; }
+⏫ { return GREATER_THAN_EQUAL; }
+⏬ { return LESS_THAN_EQUAL; }
+🔁 { return EQUAL; }
+🔀 { return NOT_EQUAL; }
+❗ { return NEGATION; }
+🅰 { return AND; }
+🅾 { return OR; }
+🤔 { return IF_START; }
+😬 { return IF_END; }
+😒 { return ELSE; }
+🫸 { return CONDITION_BEGIN; }
+🫷 { return CONDITION_END; }
+🐣 { return FOR_BEGIN; }
+🐥 { return FOR_END; }
+🚭 { return FOR_CONDITION_SEPARATOR; }
+🐳 { return WHILE_BEGIN; }
+🐋 { return WHILE_END; }
+💅 { return PRINT; }
+✍ { return INPUT; }
 
+<<<<<<< HEAD
 [a-zA-Z_][a-zA-Z0-9_]* { // Needs to be declared last
     yylval.str = strdup(yytext); // Copy the identifier name
     return IDENTIFIER;          // Return the IDENTIFIER token
@@ -92,6 +100,10 @@
     yyerror("Invalid character encountered");
     return 0; // This returns control back to Bison
 }
+=======
+    /* Ignore comments*/
+👅.* { /* Do nothing */ }
+>>>>>>> 61f240568ca40da017d7b7c7bdb4b4fe0a144b79
 
 %%
 
