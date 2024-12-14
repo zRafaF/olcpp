@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <vector>
+
 // Estrutura de um nó da árvore
 typedef struct Node {
     char *instruction;

@@ -1,6 +1,6 @@
 %{
-    #include "node.h" // Include the shared header for Node structure and functions
-    #include "parser.tab.h"
+    #include "node.hpp" // Include the shared header for Node structure and functions
+    #include "parser.tab.hpp"
     #include <stdlib.h>
     #include <string.h>
 

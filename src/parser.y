@@ -3,7 +3,7 @@
     #include <stdio.h>    // For standard input/output operations
     #include <stdlib.h>   // For memory allocation and general utilities
     #include <stdbool.h>  // For boolean type and constants
-    #include "node.h"
+    #include "node.hpp"
 
     extern int yylex();
     extern int yyparse();

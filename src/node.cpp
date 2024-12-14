@@ -1,4 +1,4 @@
-#include "node.h"
+#include "node.hpp"
 
 Node *createNode(const char *instruction, Node *value, Node *next) {
     Node *node = (Node *)malloc(sizeof(Node));
@@ -11,6 +11,9 @@ Node *createNode(const char *instruction, Node *value, Node *next) {
 void generateIR(Node *root, FILE *output) {
     if (root == NULL)
         return;
+
+    std::vector<int> v;
+    printf("%d\n", v.size());
 
     fprintf(output, "{\"instruction\":\"%s\"", root->instruction);
 
