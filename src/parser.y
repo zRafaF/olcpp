@@ -33,8 +33,8 @@
 
 // Non terminal definitions
 %type <node> program statement_list statement expr term factor var_declaration var_declaration_expressions 
-%type <node> integer_expression string_expression boolean_expression array_expression
-%type <str> var_declaration_types boolean assigned_array_digits
+%type <node> integer_expression string_expression boolean_expression array_expression assigned_array_digits
+%type <str> var_declaration_types boolean 
 
 /* %token END_OF_LINE    // Marks the end of a line */
 
@@ -135,23 +135,28 @@ string_expression:
     ; // Handles strings and identifiers in expressions
 
 array_expression:
-    CONDITION_BEGIN assigned_array_digits CONDITION_END { $$ = $2; }
-    ; // Arrays can be assigned directly or using condition delimiters
+    CONDITION_BEGIN assigned_array_digits CONDITION_END { 
+        $$ = createNode(
+            "ARRAY", 
+            $2, 
+            NULL);
+    }
+    ;
 
 assigned_array_digits:
     INTEGER { 
         $$ = createNode(
             "CONSTANT", 
             createNode($1, NULL, NULL), 
-            NULL); 
-    }
-    | INTEGER ARRAY_DECLARATION_DIVIDER assigned_array_digits{
-        $$ = createNode(
-            "ARRAY_DECLARATION_DIVIDER", 
-            createNode($1, $3, NULL), 
             NULL);
     }
-    ; // Handles assignment of multiple integers to an array
+    | INTEGER ARRAY_DECLARATION_DIVIDER assigned_array_digits {
+        $$ = createNode(
+            "CONSTANT", 
+            createNode($1, NULL, NULL), 
+            $3);
+    }
+    ;
 
 boolean_expression:
     boolean { 

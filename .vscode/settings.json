@@ -4,7 +4,11 @@
     "system_error": "c",
     "type_traits": "c",
     "xlocnum": "c",
-    "xtr1common": "c"
+    "xtr1common": "c",
+    "initializer_list": "c",
+    "vector": "c",
+    "xstring": "c",
+    "xutility": "c"
   },
   "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google,  ColumnLimit: 0, IndentWidth: 4, TabWidth: 4}",
   "cSpell.words": [

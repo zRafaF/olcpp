@@ -35,15 +35,50 @@
       }
     ],
     "next": {
-      "instruction": "ASSIGN",
+      "instruction": "VARIABLE_DECLARATION",
       "operands": [
         {
-          "instruction": "myu",
+          "instruction": "my_vector",
           "operands": [
-            { "instruction": "VARIABLE", "operands": [{ "instruction": "y" }] }
+            {
+              "instruction": "INT_ARRAY_TYPE",
+              "operands": [
+                {
+                  "instruction": "ARRAY",
+                  "operands": [
+                    {
+                      "instruction": "CONSTANT",
+                      "operands": [{ "instruction": "23" }],
+                      "next": {
+                        "instruction": "CONSTANT",
+                        "operands": [{ "instruction": "3" }],
+                        "next": {
+                          "instruction": "CONSTANT",
+                          "operands": [{ "instruction": "12" }]
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
           ]
         }
-      ]
+      ],
+      "next": {
+        "instruction": "ASSIGN",
+        "operands": [
+          {
+            "instruction": "myu",
+            "operands": [
+              {
+                "instruction": "VARIABLE",
+                "operands": [{ "instruction": "y" }]
+              }
+            ]
+          }
+        ]
+      }
     }
   }
 }
