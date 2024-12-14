@@ -80,8 +80,8 @@
 🚭 { return FOR_CONDITION_SEPARATOR; }
 🐳 { return WHILE_BEGIN; }
 🐋 { return WHILE_END; }
-💅 { return PRINT; }
-✍ { return INPUT; }
+💅 { return PRINT_STATEMENT; }
+✍ { return INPUT_STATEMENT; }
 
 [a-zA-Z_][a-zA-Z0-9_]* { // Needs to be declared last
     yylval.str = strdup(yytext); // Copy the identifier name

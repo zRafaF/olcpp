@@ -36,7 +36,7 @@
 // Non terminal definitions
 %type <node> program statement_list statement expr term factor var_declaration var_declaration_expressions 
 %type <node> integer_expression string_expression boolean_expression array_expression assigned_array_digits
-%type <node> var_assignment boolean_condition_body expression_value
+%type <node> var_assignment boolean_condition_body expression_value condition print input
 %type <str> var_declaration_types boolean 
 
 %token END_OF_LINE    // Marks the end of a line
@@ -46,7 +46,7 @@
 %token VARIABLE_DECLARATION ARRAY_DECLARATION_DIVIDER INTEGER_ADDITION INTEGER_SUBTRACTION INTEGER_MULTIPLICATION
 %token INTEGER_DIVISION INTEGER_MODULUS GREATER_THAN LESS_THAN GREATER_THAN_EQUAL LESS_THAN_EQUAL EQUAL
 %token NOT_EQUAL NEGATION AND OR IF_START IF_END ELSE CONDITION_BEGIN CONDITION_END FOR_BEGIN FOR_END
-%token FOR_CONDITION_SEPARATOR WHILE_BEGIN WHILE_END PRINT INPUT ASSIGN PARENTHESIS_OPEN PARENTHESIS_CLOSE
+%token FOR_CONDITION_SEPARATOR WHILE_BEGIN WHILE_END PRINT_STATEMENT INPUT_STATEMENT ASSIGN PARENTHESIS_OPEN PARENTHESIS_CLOSE
 
 
 // Operator precedence
@@ -80,6 +80,8 @@ e_o_l: { /* Skip extra END_OF_LINE tokens */ }
 statement:
     var_declaration e_o_l { $$ = $1; }
     | var_assignment e_o_l { $$ = $1; }
+    | print e_o_l { $$ = $1; }
+    | input e_o_l { $$ = $1; }
 ;
 
 var_assignment:
@@ -149,7 +151,17 @@ string_expression:
             createNode($1, NULL, NULL), 
             NULL); 
     }
+    | input { $$ = $1; }
     ; // Handles strings and identifiers in expressions
+
+input:
+    INPUT_STATEMENT { 
+        $$ = createNode(
+            "INPUT_STATEMENT", 
+            NULL, 
+            NULL);
+    }
+    ;
 
 array_expression:
     CONDITION_BEGIN assigned_array_digits CONDITION_END { 
@@ -189,9 +201,6 @@ assigned_array_digits:
 
 
 
-/* condition:
-    CONDITION_BEGIN boolean_condition_body CONDITION_END { $$ = $2; }
-    ; */
 boolean_condition_body:
     boolean_expression { $$ = $1; }
     | boolean_condition_body AND boolean_condition_body {
@@ -256,6 +265,21 @@ factor:
     | IDENTIFIER { $$ = createNode("VARIABLE", createNode($1, NULL, NULL), NULL); }
 ;
 
+condition:
+    CONDITION_BEGIN boolean_condition_body CONDITION_END { $$ = $2; }
+    ;
+
+print:
+    PRINT_STATEMENT condition {
+        $$ = createNode("PRINT_STATEMENT", $2, NULL);
+    }
+    ;
+
+
+
+
+
+    
 
 /* statement:
     var_declaration END_OF_LINE
@@ -316,13 +340,7 @@ while_loop:
     WHILE_BEGIN condition END_OF_LINE program_body WHILE_END
     ; // While loop syntax
 
-print:
-    PRINT expression_value
-    ; // Print statement
-
-input:
-    INPUT IDENTIFIER
-    ; // Input statement */
+*/
 
 %%
 
