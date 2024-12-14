@@ -17,6 +17,22 @@ Node *createNode(const char *instruction, OperandsArray *operands, Node *next) {
     return node;
 }
 
+Node *appendOperand(Node *node, Node *operand) {
+    if (node == NULL)
+        return NULL;
+
+    if (node->operands == NULL) {
+        node->operands = (OperandsArray *)malloc(sizeof(OperandsArray));
+        node->operands->nodes = (Node **)malloc(sizeof(Node *));
+        node->operands->size = 0;
+    }
+
+    node->operands->nodes = (Node **)realloc(node->operands->nodes, (node->operands->size + 1) * sizeof(Node *));
+    node->operands->nodes[node->operands->size] = operand;
+    node->operands->size++;
+    return node;
+}
+
 void generateIR(Node *root, FILE *output) {
     if (root == NULL)
         return;
