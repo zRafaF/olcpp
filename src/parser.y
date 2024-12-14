@@ -35,6 +35,7 @@
 %type <node> program statement_list statement expr term factor var_declaration var_declaration_expressions 
 %type <node> integer_expression string_expression boolean_expression array_expression assigned_array_digits
 %type <node> var_assignment boolean_condition_body expression_value condition print input if else
+%type <node> for_loop while_loop
 %type <str> var_declaration_types boolean 
 
 %token END_OF_LINE    // Marks the end of a line
@@ -81,6 +82,8 @@ statement:
     | print e_o_l { $$ = $1; }
     | input e_o_l { $$ = $1; }
     | if e_o_l { $$ = $1; }
+    | for_loop e_o_l { $$ = $1; }
+    | while_loop e_o_l { $$ = $1; }
 ;
 
 var_assignment:
@@ -283,11 +286,7 @@ if:
     | IF_START condition e_o_l statement_list optional_end_of_lines IF_END else{
         $$ = createNode("IF_ELSE_CONDITION", createNode("IF", $2, $4), $7);
     }
-    /* | if else if { 
-        printf("ELSE IF\n");
-        $$ = createNode("IF", $1, $2); 
-    } */
-    ; // If statement with a condition and body
+    ;
 
 else:
     ELSE e_o_l statement_list optional_end_of_lines IF_END { $$ = createNode("ELSE_CONDITION", createNode("ELSE", NULL, $3), NULL); }
@@ -296,48 +295,17 @@ else:
 
     
 
-/* statement:
-    var_declaration END_OF_LINE
-    | assignment END_OF_LINE
-    | condition END_OF_LINE
-    | if END_OF_LINE
-    | else END_OF_LINE
-    | print END_OF_LINE
-    | input END_OF_LINE
-    | for_loop END_OF_LINE
-    | while_loop END_OF_LINE
-    ; // Each statement is one of several valid constructs
-
-
-term:
-    INTEGER
-    | IDENTIFIER
-    | term INTEGER_ADDITION term
-    | term INTEGER_SUBTRACTION term
-    | term INTEGER_MULTIPLICATION term
-    | term INTEGER_DIVISION term
-    | term INTEGER_MODULUS term
-    ; // Arithmetic operations
-
-if:
-    IF_START condition END_OF_LINE program_body IF_END
-    ; // If statement with a condition and body
-
-else:
-    if ELSE if
-    | if ELSE if else
-    | if ELSE IF_START program_body IF_END
+for_loop:
+    FOR_BEGIN CONDITION_BEGIN boolean_condition_body FOR_CONDITION_SEPARATOR var_assignment CONDITION_END e_o_l statement_list optional_end_of_lines FOR_END {
+        $$ = createNode("FOR_LOOP", createNode("FOR", $3, createNode("FOR_ASSIGN", $5, $8)), NULL);
+    }
     ;
 
-for_loop:
-    FOR_BEGIN CONDITION_BEGIN expression FOR_CONDITION_SEPARATOR assignment CONDITION_END END_OF_LINE program_body FOR_END
-    ; // For loop syntax
-
 while_loop:
-    WHILE_BEGIN condition END_OF_LINE program_body WHILE_END
-    ; // While loop syntax
-
-*/
+    WHILE_BEGIN condition e_o_l statement_list optional_end_of_lines WHILE_END{
+        $$ = createNode("WHILE_LOOP", createNode("WHILE", $2, $4), NULL);
+    }
+    ;
 
 %%
 

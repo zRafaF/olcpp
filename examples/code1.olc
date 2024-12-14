@@ -1,59 +1,30 @@
 👍️
-🪣 bool2 ⁉️ 🟰 2 🔁 2
+🪣 i 💯 🟰 1
 
 
 
+👅 For i < 45; i+=1
+🐣🫸i🔽45🚭i 🟰 i ➕ 1🫷
+💅🫸i🫷
 
-🤔🫸bool2🫷                👅if
-bool2 🟰 ❌
-
-😬                          👅end if
-
-
-👅👅👅👅👅👅👅👅👅👅👅👅👅👅👅👅👅
-
-
-🤔🫸❌🫷                  👅if
-    bool2 🟰 ✅
-    bool2 🟰 ✅
-
-😬😒                       👅end if else
-    bool2 🟰 ❌
-    bool2 🟰 ❌
-
-😬                         👅end if
+🐥
 
 
 👅👅👅👅👅👅👅👅👅👅👅👅👅👅👅👅👅
 
 
-🤔🫸❌🫷                  👅if
-    bool2 🟰 ✅
-    bool2 🟰 ✅
-    
-😬😒🤔🫸✅🫷             👅end if else if
-    bool2 🟰 2 🔁 2
-    bool2 🟰 2 🔁 2
+i 🟰 100
 
-😬
+👅 while i > 5
+🐳🫸i🔼5🫷
+i 🟰 i ➖ 100
+
+🐋
 
 
-👅👅👅👅👅👅👅👅👅👅👅👅👅👅👅👅👅
 
 
-💅🫸👉Aninhados👈🫷
 
-🤔🫸bool2🫷                👅if
-    🤔🫸bool2🫷                👅if
-        💅🫸👉Dentro👈🫷
-
-    😬                          👅end if
-    💅🫸👉Fora👈🫷
-
-😬                          👅end if
 
 💅🫸👉Fim do programa👈🫷
-
-
-
 👎️
