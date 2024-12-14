@@ -1,5 +1,3 @@
-
-
 %{
     // Definitions and includes
     #include <stdio.h>
@@ -36,7 +34,7 @@
 // Non terminal definitions
 %type <node> program statement_list statement expr term factor var_declaration var_declaration_expressions 
 %type <node> integer_expression string_expression boolean_expression array_expression assigned_array_digits
-%type <node> var_assignment boolean_condition_body expression_value condition print input
+%type <node> var_assignment boolean_condition_body expression_value condition print input if else
 %type <str> var_declaration_types boolean 
 
 %token END_OF_LINE    // Marks the end of a line
@@ -82,6 +80,7 @@ statement:
     | var_assignment e_o_l { $$ = $1; }
     | print e_o_l { $$ = $1; }
     | input e_o_l { $$ = $1; }
+    | if e_o_l { $$ = $1; }
 ;
 
 var_assignment:
@@ -254,6 +253,7 @@ expr:
 term:
     term INTEGER_MULTIPLICATION factor { $$ = createNode("INTEGER_MULTIPLICATION", $1, $3); }
     | term INTEGER_DIVISION factor { $$ = createNode("INTEGER_DIVISION", $1, $3); }
+    | term INTEGER_MODULUS factor { $$ = createNode("INTEGER_MODULUS", $1, $3); }
     | factor { $$ = $1; }  // Non terminal nodes should be returned as is
 ;
 
@@ -276,8 +276,23 @@ print:
     ;
 
 
+if:
+    IF_START condition e_o_l statement_list optional_end_of_lines IF_END{
+        $$ = createNode("IF_CONDITION", createNode("IF", $2, $4), NULL);
+    }
+    | IF_START condition e_o_l statement_list optional_end_of_lines IF_END else{
+        $$ = createNode("IF_ELSE_CONDITION", createNode("IF", $2, $4), $7);
+    }
+    /* | if else if { 
+        printf("ELSE IF\n");
+        $$ = createNode("IF", $1, $2); 
+    } */
+    ; // If statement with a condition and body
 
-
+else:
+    ELSE e_o_l statement_list optional_end_of_lines IF_END { $$ = createNode("ELSE_CONDITION", createNode("ELSE", NULL, $3), NULL); }
+    | ELSE if { $$ = createNode("ELSE_IF_CONDITION", createNode("ELSE", NULL, $2), NULL); }
+    ;
 
     
 
@@ -303,24 +318,6 @@ term:
     | term INTEGER_DIVISION term
     | term INTEGER_MODULUS term
     ; // Arithmetic operations
-
-assignment:
-    IDENTIFIER ASSIGN integer_expression
-    | IDENTIFIER ASSIGN string_expression
-    | IDENTIFIER ASSIGN CONDITION_BEGIN assigned_array_digits CONDITION_END
-    ; // Assignment syntax for different types
-
-
-
-condition_body:
-    expression
-    | condition_body AND expression
-    | condition_body OR expression
-    ;
-
-
-
-
 
 if:
     IF_START condition END_OF_LINE program_body IF_END

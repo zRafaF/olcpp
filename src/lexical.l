@@ -8,6 +8,8 @@
     extern void yyerror(const char* s);  // Declare yyerror
 
 %}
+%option yylineno
+
 
 %%
 
