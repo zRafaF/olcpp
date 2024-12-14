@@ -18,16 +18,18 @@
 
 %union {
     int num;          // For integer values
-    char *str;        // For string values
-    int *array;       // For array of integers
-    Node *node;       // For AST nodes
+    char* str;        // For string values
+    int* array;       // For array of integers
+    Node* node;       // For AST nodes
 }
 
 // Token definitions
-%token <num> INTEGER  // Integer token with a value
+/* %token <num> INTEGER  // Integer token with a value */
+%token <str> INTEGER  // Integer token with a value as string due to IR being string-based
 %token <str> IDENTIFIER  // Identifier and string tokens
 %token <str> STRING  // Identifier and string tokens
-%type <node> program statement_list statement expr term factor
+%type <node> program statement_list statement expr term factor var_declaration var_declaration_expressions integer_expression string_expression boolean_expression
+%type <str> var_declaration_types boolean
 
 %token END_OF_LINE    // Marks the end of a line
 
@@ -37,6 +39,7 @@
 %token INTEGER_DIVISION INTEGER_MODULUS GREATER_THAN LESS_THAN GREATER_THAN_EQUAL LESS_THAN_EQUAL EQUAL
 %token NOT_EQUAL NEGATION AND OR IF_START IF_END ELSE CONDITION_BEGIN CONDITION_END FOR_BEGIN FOR_END
 %token FOR_CONDITION_SEPARATOR WHILE_BEGIN WHILE_END PRINT INPUT ASSIGN PARENTHESIS_OPEN PARENTHESIS_CLOSE
+
 
 // Operator precedence
 %left OR
@@ -59,14 +62,87 @@ statement_list:
 ;
 
 statement:
-    VARIABLE_DECLARATION IDENTIFIER INTEGER_TYPE ASSIGN expr {
-        $$ = createNode("VARIABLE_DECLARATION", createNode($2, createNode("INTEGER_TYPE", $5, NULL), NULL), NULL);
-    }
+    var_declaration { $$ = $1; }
     | IDENTIFIER ASSIGN expr {
         $$ = createNode("ASSIGN", createNode($1, $3, NULL), NULL);
     }
     | expr { $$ = $1; }
 ;
+
+// Variable declaration with initialization
+var_declaration:
+    VARIABLE_DECLARATION IDENTIFIER var_declaration_types ASSIGN var_declaration_expressions {
+        $$ = createNode(
+            "VARIABLE_DECLARATION", 
+            createNode(
+                $2, 
+                createNode($3, $5, NULL), 
+                NULL), 
+            NULL);
+    }
+    ;
+
+var_declaration_types:
+    INTEGER_TYPE { $$ = "INTEGER_TYPE"; }
+    | STRING_TYPE { $$ = "STRING_TYPE"; }
+    | INT_ARRAY_TYPE { $$ = "INT_ARRAY_TYPE"; }
+    | BOOL_TYPE { $$ = "BOOL_TYPE"; }
+    ;
+
+boolean:
+    BOOL_TRUE { $$ = "BOOL_TRUE"; }
+    | BOOL_FALSE { $$ = "BOOL_FALSE"; }
+    ; // Boolean literals
+
+var_declaration_expressions:
+    integer_expression { $$ = $1; }
+    | string_expression { $$ = $1; }
+    /* | array_expression */
+    | boolean_expression { $$ = $1; }
+    | IDENTIFIER { 
+        $$ = createNode(
+            "VARIABLE", 
+            createNode($1, NULL, NULL), 
+            NULL); 
+    }
+    ;
+
+integer_expression:
+    INTEGER { 
+        $$ = createNode(
+            "CONSTANT", 
+            createNode(
+                $1,
+                NULL, 
+                NULL), 
+            NULL); 
+    }
+    | expr { $$ = $1; }
+    ; // Handles integers and identifiers in expressions
+
+string_expression:
+    STRING { 
+        $$ = createNode(
+            "CONSTANT", 
+            createNode($1, NULL, NULL), 
+            NULL); 
+    }
+    ; // Handles strings and identifiers in expressions
+
+/* array_expression:
+    CONDITION_BEGIN assigned_array_digits CONDITION_END
+    ; // Arrays can be assigned directly or using condition delimiters */
+
+boolean_expression:
+    boolean { 
+        $$ = createNode(
+            "CONSTANT", 
+            createNode($1, NULL, NULL), 
+            NULL); 
+    }
+    /* | condition */
+    ;
+
 
 expr:
     expr INTEGER_ADDITION term { $$ = createNode("INTEGER_ADDITION", $1, $3); }
@@ -83,9 +159,7 @@ term:
 factor:
     PARENTHESIS_OPEN expr PARENTHESIS_CLOSE { $$ = $2; }
     | INTEGER {
-        char buffer[12];
-        sprintf(buffer, "%d", $1);
-        $$ = createNode("CONSTANT", createNode(buffer, NULL, NULL), NULL);
+        $$ = createNode("CONSTANT", createNode($1, NULL, NULL), NULL);
     }
     | IDENTIFIER { $$ = createNode("VARIABLE", createNode($1, NULL, NULL), NULL); }
 ;
@@ -108,48 +182,7 @@ assigned_array_digits:
     | INTEGER ARRAY_DECLARATION_DIVIDER assigned_array_digits
     ; // Handles assignment of multiple integers to an array
 
-// Variable declaration with initialization
-var_declaration:
-    VARIABLE_DECLARATION IDENTIFIER var_declaration_types ASSIGN var_declaration_expressions
-    ;
 
-var_declaration_types:
-    INTEGER_TYPE
-    | STRING_TYPE
-    | INT_ARRAY_TYPE
-    | BOOL_TYPE
-    ;
-
-boolean:
-    BOOL_TRUE
-    | BOOL_FALSE
-    ; // Boolean literals
-
-var_declaration_expressions:
-    integer_expression
-    | string_expression
-    | array_expression
-    | boolean_expression
-    | IDENTIFIER
-    ;
-
-integer_expression:
-    INTEGER
-    | term
-    ; // Handles integers and identifiers in expressions
-
-string_expression:
-    STRING
-    ; // Handles strings and identifiers in expressions
-
-array_expression:
-    CONDITION_BEGIN assigned_array_digits CONDITION_END
-    ; // Arrays can be assigned directly or using condition delimiters
-
-boolean_expression:
-    boolean
-    | condition
-    ;
 
 term:
     INTEGER

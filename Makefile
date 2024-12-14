@@ -71,4 +71,4 @@ run: $(OUTPUT)
 # Clean target
 clean:
 	rm -rf $(GEN_DIR) $(BUILD_DIR)
-	@echo "$(COLOR_GREEN)Removed gen and build directories$(END_COLOR)"
+	# @echo "$(COLOR_GREEN)Removed gen and build directories$(END_COLOR)"

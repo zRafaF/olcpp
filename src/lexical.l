@@ -12,7 +12,8 @@
 %%
 
 [0-9]+ {
-    yylval.num = atoi(yytext);
+    // yylval.num = atoi(yytext);
+    yylval.str = strdup(yytext);
     return INTEGER;
 }
 
@@ -23,19 +24,12 @@
 [ \r\n]+ { /* Ignore whitespace */ }
 
 
-    /* Ignore comments*/
-"👅".* { /* Do nothing */ }
+    
+"👅".* { /* Ignore comments*/ }
 
-"("     { return PARENTHESIS_OPEN; }   // Return '(' token
-")"     { return PARENTHESIS_CLOSE; }   // Return ')' token
+"(" { return PARENTHESIS_OPEN; }   // Return '(' token
+")" { return PARENTHESIS_CLOSE; }   // Return ')' token
 
-<<<<<<< HEAD
-=======
-. {
-    yyerror("Invalid character encountered");
-    return 0;
-}
->>>>>>> 61f240568ca40da017d7b7c7bdb4b4fe0a144b79
 
 👍️ { return PROGRAM_BEGIN; }
 👎️ { return PROGRAM_END; }
@@ -46,12 +40,20 @@
 ✅ { return BOOL_TRUE; }
 ❌ { return BOOL_FALSE; }
 
-👉[^"\n]*👈 {
-    char *temp = strdup(yytext + 2);  // Remove "👉"
-    temp[strlen(temp) - 2] = '\0';    // Remove "👈"
-    yylval.str = temp;
+👉([^👈]+)👈 {
+    char *str = strdup(yytext);
+
+    // Remove the first and last character
+    str+=4;
+    str[strlen(str) - 4] = '\0';
+
+    // Emojis are UTF-8 encoded, so we need to remove the extra bytes
+
+    yylval.str = str;
     return STRING;
 }
+
+
 
 🪣 { return VARIABLE_DECLARATION; }
 🚬 { return ARRAY_DECLARATION_DIVIDER; }
@@ -83,7 +85,6 @@
 💅 { return PRINT; }
 ✍ { return INPUT; }
 
-<<<<<<< HEAD
 [a-zA-Z_][a-zA-Z0-9_]* { // Needs to be declared last
     yylval.str = strdup(yytext); // Copy the identifier name
     return IDENTIFIER;          // Return the IDENTIFIER token
@@ -100,10 +101,6 @@
     yyerror("Invalid character encountered");
     return 0; // This returns control back to Bison
 }
-=======
-    /* Ignore comments*/
-👅.* { /* Do nothing */ }
->>>>>>> 61f240568ca40da017d7b7c7bdb4b4fe0a144b79
 
 %%
 

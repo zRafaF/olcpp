@@ -1,1 +1,49 @@
-{"instruction":"VARIABLE_DECLARATION","operands": [{"instruction":"y","operands": [{"instruction":"INTEGER_TYPE","operands": [{"instruction":"CONSTANT","operands": [{"instruction":"10"}]}]}]}],"next": {"instruction":"VARIABLE_DECLARATION","operands": [{"instruction":"myu","operands": [{"instruction":"INTEGER_TYPE","operands": [{"instruction":"CONSTANT","operands": [{"instruction":"10"}]}]}]}],"next": {"instruction":"ASSIGN","operands": [{"instruction":"myu","operands": [{"instruction":"VARIABLE","operands": [{"instruction":"y"}]}]}]}}}
+{
+  "instruction": "VARIABLE_DECLARATION",
+  "operands": [
+    {
+      "instruction": "y",
+      "operands": [
+        {
+          "instruction": "STRING_TYPE",
+          "operands": [
+            {
+              "instruction": "CONSTANT",
+              "operands": [{ "instruction": "abcd" }]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "next": {
+    "instruction": "VARIABLE_DECLARATION",
+    "operands": [
+      {
+        "instruction": "myu",
+        "operands": [
+          {
+            "instruction": "INTEGER_TYPE",
+            "operands": [
+              {
+                "instruction": "CONSTANT",
+                "operands": [{ "instruction": "10" }]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "next": {
+      "instruction": "ASSIGN",
+      "operands": [
+        {
+          "instruction": "myu",
+          "operands": [
+            { "instruction": "VARIABLE", "operands": [{ "instruction": "y" }] }
+          ]
+        }
+      ]
+    }
+  }
+}
