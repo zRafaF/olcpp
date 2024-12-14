@@ -14,6 +14,8 @@
   "cSpell.words": [
     "fclose",
     "fprintf",
+    "noinput",
+    "nounput",
     "perror",
     "stdbool",
     "strdup",

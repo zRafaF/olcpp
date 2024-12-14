@@ -1,54 +1,53 @@
 %{
-    // Definitions and includes
-    #include <stdio.h>
-    #include <stdlib.h>
-    #include <stdbool.h>
-    #include "node.h"
+    // Include necessary headers
+    #include <stdio.h>      // For standard input/output
+    #include <stdlib.h>     // For memory management
+    #include <stdbool.h>    // For boolean values
+    #include "node.h"       // For defining AST node structures
 
-    extern int yylex();
-    extern int yyparse();
-    extern FILE* yyin;
+    // External declarations
+    extern int yylex();       // Lexer function
+    extern int yyparse();     // Parser function
+    extern FILE* yyin;        // Input file for lexer/parser
 
-    extern int yylineno; // Tracks the current line number
-    extern char* yytext; // Last matched token text
+    extern int yylineno;      // Tracks the current line number
+    extern char* yytext;      // Last matched token text
 
-    void yyerror(const char* s);
-    Node *root;
+    void yyerror(const char* s); // Error handling function
+    Node *root;              // Root node of the AST
 %}
 
-// Define the union for the parser
-// It means the possible types that can be stored in the yylval variable (the return using $$)
+// Define the union for YYSTYPE to specify the possible value types used in the parser
 %union {
-    int num;          // For integer values
-    char* str;        // For string values
-    int* array;       // For array of integers
-    Node* node;       // For AST nodes
+    int num;          // Integer values
+    char* str;        // String values
+    int* array;       // Array of integers
+    Node* node;       // Abstract Syntax Tree (AST) nodes
 }
 
-// Token definitions
-/* %token <num> INTEGER  // Integer token with a value */
-%token <str> INTEGER  // Integer token with a value as string due to IR being string-based
-%token <str> IDENTIFIER  // Identifier and string tokens
-%token <str> STRING  // Identifier and string tokens
+// Token definitions with data types for values
+%token <str> INTEGER      // Numeric constants
+%token <str> IDENTIFIER   // Variable or function names
+%token <str> STRING       // String literals
 
-// Non terminal definitions
-%type <node> program statement_list statement expr term factor var_declaration var_declaration_expressions 
+// Define non-terminal types and their associated values
+%type <node> program statement_list statement expr term factor var_declaration var_declaration_expressions
 %type <node> integer_expression string_expression boolean_expression array_expression assigned_array_digits
 %type <node> var_assignment boolean_condition_body expression_value condition print input if else
 %type <node> for_loop while_loop
-%type <str> var_declaration_types boolean 
+%type <str> var_declaration_types boolean
 
-%token END_OF_LINE    // Marks the end of a line
+// End of line token for handling line endings in the source code
+%token END_OF_LINE
 
-// Keywords and operators used in the language
+// Keywords and operators in the language
 %token PROGRAM_BEGIN PROGRAM_END INTEGER_TYPE STRING_TYPE INT_ARRAY_TYPE BOOL_TYPE TRUE FALSE ACCESS_ARRAY
 %token VARIABLE_DECLARATION ARRAY_DECLARATION_DIVIDER INTEGER_ADDITION INTEGER_SUBTRACTION INTEGER_MULTIPLICATION
 %token INTEGER_DIVISION INTEGER_MODULUS GREATER_THAN LESS_THAN GREATER_THAN_EQUAL LESS_THAN_EQUAL EQUAL
 %token NOT_EQUAL NEGATION AND OR IF_START IF_END ELSE CONDITION_BEGIN CONDITION_END FOR_BEGIN FOR_END
 %token FOR_CONDITION_SEPARATOR WHILE_BEGIN WHILE_END PRINT_STATEMENT INPUT_STATEMENT ASSIGN PARENTHESIS_OPEN PARENTHESIS_CLOSE
 
-
-// Operator precedence
+// Define operator precedence and associativity
 %left OR
 %left AND
 %left EQUAL NOT_EQUAL
@@ -57,25 +56,30 @@
 %left INTEGER_MULTIPLICATION INTEGER_DIVISION INTEGER_MODULUS
 %right NEGATION
 
-// Grammar rules
+// Grammar rules for the language
 %%
 program:
+    // Program structure starts and ends with specific keywords
     PROGRAM_BEGIN e_o_l statement_list optional_end_of_lines PROGRAM_END { root = $3; }
 ;
 
 optional_end_of_lines:
-    /* empty */ { /* Do nothing */ }
+    {/* Allow multiple empty lines between statements */}
     | END_OF_LINE optional_end_of_lines 
 ;
 
 statement_list:
+    // A list of statements, linked together
     statement_list statement { $$ = $1; Node *last = $1; while (last->next) last = last->next; last->next = $2; }
     | statement { $$ = $1; }
 ;
 
-e_o_l: { /* Skip extra END_OF_LINE tokens */ }
+// Skip extra END_OF_LINE tokens
+e_o_l:
     END_OF_LINE optional_end_of_lines
+;
 
+// Handle different types of statements
 statement:
     var_declaration e_o_l { $$ = $1; }
     | var_assignment e_o_l { $$ = $1; }
@@ -86,14 +90,17 @@ statement:
     | while_loop e_o_l { $$ = $1; }
 ;
 
+// Variable assignment rules
 var_assignment:
     IDENTIFIER ASSIGN var_declaration_expressions {
+        // Assign a value to a variable
         $$ = createNode(
             "ASSIGN", 
             createNode($1, $3, NULL), 
             NULL);
     }
     | IDENTIFIER ACCESS_ARRAY INTEGER ASSIGN var_declaration_expressions {
+        // Assign a value to an array element
         $$ = createNode(
             "ASSIGN_ARRAY", 
             createNode($1, createNode($3, NULL, NULL), $5), 
@@ -114,18 +121,21 @@ var_declaration:
     }
     ;
 
-var_declaration_types: // Variable types literals
+// Supported variable types
+var_declaration_types:
     INTEGER_TYPE { $$ = "INTEGER_TYPE"; }
     | STRING_TYPE { $$ = "STRING_TYPE"; }
     | INT_ARRAY_TYPE { $$ = "INT_ARRAY_TYPE"; }
     | BOOL_TYPE { $$ = "BOOL_TYPE"; }
     ;
 
-boolean: // Boolean literals
+// Boolean literals
+boolean:
     TRUE { $$ = "TRUE"; }
     | FALSE { $$ = "FALSE"; }
     ; 
 
+// Expressions for variable declarations
 var_declaration_expressions:
     integer_expression { $$ = $1; }
     | string_expression { $$ = $1; }
@@ -139,6 +149,7 @@ var_declaration_expressions:
     }
     ;
 
+// Handles integer constants, expressions, and array access by index
 integer_expression:
     INTEGER { 
         $$ = createNode(
@@ -149,15 +160,16 @@ integer_expression:
                 NULL), 
             NULL); 
     }
-    | expr { $$ = $1; }
+    | expr { $$ = $1; } // Pass through an evaluated expression
     | IDENTIFIER ACCESS_ARRAY INTEGER { 
         $$ = createNode(
             "ACCESS_ARRAY", 
             createNode($1, createNode($3, NULL, NULL), NULL), 
             NULL);
     }
-    ; // Handles integers and identifiers in expressions
+    ;
 
+// Handles string literals and input statements
 string_expression:
     STRING { 
         $$ = createNode(
@@ -165,9 +177,10 @@ string_expression:
             createNode($1, NULL, NULL), 
             NULL); 
     }
-    | input { $$ = $1; }
-    ; // Handles strings and identifiers in expressions
+    | input { $$ = $1; } // Allows input statements to serve as string expressions
+    ;
 
+// Handles input operations
 input:
     INPUT_STATEMENT { 
         $$ = createNode(
@@ -177,6 +190,7 @@ input:
     }
     ;
 
+// Defines an array by wrapping digits in a condition delimiter
 array_expression:
     CONDITION_BEGIN assigned_array_digits CONDITION_END { 
         $$ = createNode(
@@ -184,8 +198,9 @@ array_expression:
             $2, 
             NULL);
     }
-    ;
+    ; 
 
+// Defines array initialization with constants or variables
 assigned_array_digits:
     INTEGER { 
         $$ = createNode(
@@ -213,8 +228,7 @@ assigned_array_digits:
     }
     ;
 
-
-
+// Logical operations including AND, OR, equality, and parentheses for grouping
 boolean_condition_body:
     boolean_expression { $$ = $1; }
     | boolean_condition_body AND boolean_condition_body {
@@ -234,14 +248,16 @@ boolean_condition_body:
     | boolean_condition_body NOT_EQUAL boolean_condition_body { $$ = createNode("NOT_EQUAL", $1, $3); }
     ;
 
+// Logical comparisons for terms
 boolean_expression:
     expression_value { $$ = $1; }
     | term GREATER_THAN term { $$ = createNode("GREATER_THAN", $1, $3); }
     | term LESS_THAN term { $$ = createNode("LESS_THAN", $1, $3); }
     | term GREATER_THAN_EQUAL term { $$ = createNode("GREATER_THAN_EQUAL", $1, $3); }
     | term LESS_THAN_EQUAL term { $$ = createNode("LESS_THAN_EQUAL", $1, $3); }
-    ; // Logical and comparison expressions
+    ;
 
+// Handles constants, terms, booleans, and negation
 expression_value:
     STRING { 
         $$ = createNode(
@@ -262,14 +278,14 @@ expression_value:
 expr:
     expr INTEGER_ADDITION term { $$ = createNode("INTEGER_ADDITION", $1, $3); }
     | expr INTEGER_SUBTRACTION term { $$ = createNode("INTEGER_SUBTRACTION", $1, $3); }
-    | term { $$ = $1; } // Non terminal nodes should be returned as is
+    | term { $$ = $1; } // Allows expressions to resolve to a term
 ;
 
 term:
     term INTEGER_MULTIPLICATION factor { $$ = createNode("INTEGER_MULTIPLICATION", $1, $3); }
     | term INTEGER_DIVISION factor { $$ = createNode("INTEGER_DIVISION", $1, $3); }
     | term INTEGER_MODULUS factor { $$ = createNode("INTEGER_MODULUS", $1, $3); }
-    | factor { $$ = $1; }  // Non terminal nodes should be returned as is
+    | factor { $$ = $1; }  // Resolves to a single factor
 ;
 
 factor:
@@ -280,17 +296,20 @@ factor:
     | IDENTIFIER { $$ = createNode("VARIABLE", createNode($1, NULL, NULL), NULL); }
 ;
 
+// Encapsulates boolean conditions
 condition:
     CONDITION_BEGIN boolean_condition_body CONDITION_END { $$ = $2; }
     ;
 
+// Handles print statements
 print:
     PRINT_STATEMENT condition {
         $$ = createNode("PRINT_STATEMENT", $2, NULL);
     }
-    ;
+    ; 
 
 
+// If statement control flow, the if content is on the "value" parameter, if the execution flow do not enter it it goes right to "next"
 if:
     IF_START condition e_o_l statement_list optional_end_of_lines IF_END{
         $$ = createNode("IF_CONDITION", createNode("IF", $2, $4), NULL);
@@ -300,19 +319,20 @@ if:
     }
     ;
 
+// Else statement control flow, it can be an else or an else if
 else:
     ELSE e_o_l statement_list optional_end_of_lines IF_END { $$ = createNode("ELSE_CONDITION", createNode("ELSE", NULL, $3), NULL); }
     | ELSE if { $$ = createNode("ELSE_IF_CONDITION", createNode("ELSE", NULL, $2), NULL); }
     ;
 
-    
-
+// For loop control flow, the for loop content is on the "value" parameter
 for_loop:
     FOR_BEGIN CONDITION_BEGIN boolean_condition_body FOR_CONDITION_SEPARATOR var_assignment CONDITION_END e_o_l statement_list optional_end_of_lines FOR_END {
         $$ = createNode("FOR_LOOP", createNode("FOR", $3, createNode("FOR_ASSIGN", $5, $8)), NULL);
     }
     ;
 
+// While loop control flow, the while loop content is on the "value" parameter
 while_loop:
     WHILE_BEGIN condition e_o_l statement_list optional_end_of_lines WHILE_END{
         $$ = createNode("WHILE_LOOP", createNode("WHILE", $2, $4), NULL);
@@ -322,37 +342,45 @@ while_loop:
 %%
 
 int main(int argc, char **argv) {
+    // Check if the correct number of arguments (input and output files) are provided
     if (argc < 3) {
         fprintf(stderr, "Usage: %s <input-file> <output-file>\n", argv[0]);
-        return 1;
+        return 1;  // Exit with an error code if the arguments are incorrect
     }
 
+    // Open the input file in read mode
     FILE *input = fopen(argv[1], "r");
-    if (!input) {
-        perror("Error opening input file");
-        return 1;
+    if (!input) {  // Check if file opening fails
+        perror("Error opening input file");  // Display the error if opening fails
+        return 1;  // Exit with an error code
     }
-    yyin = input;
+    yyin = input;  // Assign the input file to the lexer input stream
 
+    // Open the output file in write mode
     FILE *output = fopen(argv[2], "w");
-    if (!output) {
-        perror("Error opening output file");
-        fclose(input);
-        return 1;
+    if (!output) {  // Check if file opening fails
+        perror("Error opening output file");  // Display the error if opening fails
+        fclose(input);  // Close the input file if output file opening fails
+        return 1;  // Exit with an error code
     }
 
-    if (yyparse() == 0 && root) { // Parse the input and build the AST
-        generateIR(root, output); // Generate intermediate representation and write to output
-        freeNode(root); // Free the AST
+    // Parse the input and generate the AST if parsing succeeds
+    if (yyparse() == 0 && root) {  // If parsing is successful and the AST is built
+        generateIR(root, output);  // Generate intermediate representation and write it to output
+        freeNode(root);            // Free the memory allocated for the AST
     } else {
+        // If parsing fails, print an error message
         fprintf(stderr, "Parsing failed. See errors above.\n");
     }
 
+    // Close the input and output files before exiting
     fclose(input);
     fclose(output);
-    return 0;
+    return 0;  // Successful execution
 }
 
+// Error handling function for the parser, called when an error is encountered
 void yyerror(const char *s) {
+    // Print the error message with the line number and the problematic token
     fprintf(stderr, "Error at line %d: %s near '%s'\n", yylineno, s, yytext);
 }
