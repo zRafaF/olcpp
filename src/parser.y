@@ -34,6 +34,7 @@
 // Non terminal definitions
 %type <node> program statement_list statement expr term factor var_declaration var_declaration_expressions 
 %type <node> integer_expression string_expression boolean_expression array_expression assigned_array_digits
+%type <node> var_assignment
 %type <str> var_declaration_types boolean 
 
 /* %token END_OF_LINE    // Marks the end of a line */
@@ -68,11 +69,18 @@ statement_list:
 
 statement:
     var_declaration { $$ = $1; }
-    | IDENTIFIER ASSIGN expr {
-        $$ = createNode("ASSIGN", createNode($1, $3, NULL), NULL);
-    }
+    | var_assignment  { $$ = $1; }
     | expr { $$ = $1; }
 ;
+
+var_assignment:
+    IDENTIFIER ASSIGN var_declaration_expressions {
+        $$ = createNode(
+            "ASSIGN", 
+            createNode($1, $3, NULL), 
+            NULL);
+    }
+    ;
 
 // Variable declaration with initialization
 var_declaration:
@@ -153,6 +161,18 @@ assigned_array_digits:
     | INTEGER ARRAY_DECLARATION_DIVIDER assigned_array_digits {
         $$ = createNode(
             "CONSTANT", 
+            createNode($1, NULL, NULL), 
+            $3);
+    }
+    | IDENTIFIER { 
+        $$ = createNode(
+            "VARIABLE", 
+            createNode($1, NULL, NULL), 
+            NULL); 
+    }
+    | IDENTIFIER ARRAY_DECLARATION_DIVIDER assigned_array_digits {
+        $$ = createNode(
+            "VARIABLE", 
             createNode($1, NULL, NULL), 
             $3);
     }
