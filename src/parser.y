@@ -2,7 +2,7 @@
     // Definitions and includes
     #include <stdio.h>    // For standard input/output operations
     #include <stdlib.h>   // For memory allocation and general utilities
-    #include <stdbool.h>  // For boolean type and constants
+
     #include "node.hpp"
 
     extern int yylex();
@@ -13,14 +13,14 @@
     extern char* yytext; // Last matched token text
 
     void yyerror(const char* s);
-    Node *root;
+    SharedNode root;
 %}
 
 %union {
     int num;          // For integer values
-    char* str;        // For string values
-    int* array;       // For array of integers
-    Node* node;       // For AST nodes
+    std::string str;        // For string values
+    char* array;       // For array of integers
+    SharedNode node;       // For AST nodes
 }
 
 // Token definitions

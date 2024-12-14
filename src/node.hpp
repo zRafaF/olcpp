@@ -1,21 +1,28 @@
-#ifndef NODE_H
-#define NODE_H
+#ifndef NODE_HPP
+#define NODE_HPP
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include <memory>
+#include <string>
 #include <vector>
+
+struct SharedNode {
+    std::shared_ptr<Node> node;
+};
 
 // Estrutura de um nó da árvore
 typedef struct Node {
-    char *instruction;
-    struct Node *value;
-    struct Node *next;
+    std::string instruction;
+    std::vector<SharedNode> operands;
+    SharedNode next;
 } Node;
 
-Node *createNode(const char *instruction, Node *value, Node *next);
-void generateIR(Node *root, FILE *output);
-void freeNode(Node *node);
+SharedNode createNode(std::string instruction, SharedNode operand, SharedNode next);
+SharedNode createNode(std::string instruction, std::vector<SharedNode> operands, SharedNode next);
+void generateIR(SharedNode root, FILE *output);
+// void freeNode(Node *node);
 
-#endif  // NODE_H
+#endif  // NODE_HPP
