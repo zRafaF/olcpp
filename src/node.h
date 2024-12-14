@@ -12,6 +12,11 @@ typedef struct Node {
     struct Node *next;
 } Node;
 
+typedef struct NodeArray {
+    Node *node;
+    size_t size;
+} NodeArray;
+
 Node *createNode(const char *instruction, Node *value, Node *next);
 void generateIR(Node *root, FILE *output);
 void freeNode(Node *node);

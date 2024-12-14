@@ -2,5 +2,19 @@
   "files.associations": {
     "parser.tab.h": "c"
   },
-  "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google,  ColumnLimit: 0, IndentWidth: 4, TabWidth: 4}"
+  "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google,  ColumnLimit: 0, IndentWidth: 4, TabWidth: 4}",
+  "cSpell.words": [
+    "fclose",
+    "fprintf",
+    "perror",
+    "stdbool",
+    "strdup",
+    "yyerror",
+    "yyin",
+    "yylex",
+    "yylineno",
+    "yylval",
+    "yyparse",
+    "yytext"
+  ]
 }

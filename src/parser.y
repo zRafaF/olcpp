@@ -1,8 +1,8 @@
 %{
     // Definitions and includes
-    #include <stdio.h>    // For standard input/output operations
-    #include <stdlib.h>   // For memory allocation and general utilities
-    #include <stdbool.h>  // For boolean type and constants
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <stdbool.h>
     #include "node.h"
 
     extern int yylex();
@@ -16,6 +16,8 @@
     Node *root;
 %}
 
+// Define the union for the parser
+// It means the possible types that can be stored in the yylval variable (the return using $$)
 %union {
     int num;          // For integer values
     char* str;        // For string values
@@ -28,10 +30,13 @@
 %token <str> INTEGER  // Integer token with a value as string due to IR being string-based
 %token <str> IDENTIFIER  // Identifier and string tokens
 %token <str> STRING  // Identifier and string tokens
-%type <node> program statement_list statement expr term factor var_declaration var_declaration_expressions integer_expression string_expression boolean_expression
-%type <str> var_declaration_types boolean
 
-%token END_OF_LINE    // Marks the end of a line
+// Non terminal definitions
+%type <node> program statement_list statement expr term factor var_declaration var_declaration_expressions 
+%type <node> integer_expression string_expression boolean_expression array_expression
+%type <str> var_declaration_types boolean assigned_array_digits
+
+/* %token END_OF_LINE    // Marks the end of a line */
 
 // Keywords and operators used in the language
 %token PROGRAM_BEGIN PROGRAM_END INTEGER_TYPE STRING_TYPE INT_ARRAY_TYPE BOOL_TYPE BOOL_TRUE BOOL_FALSE
@@ -82,22 +87,22 @@ var_declaration:
     }
     ;
 
-var_declaration_types:
+var_declaration_types: // Variable types literals
     INTEGER_TYPE { $$ = "INTEGER_TYPE"; }
     | STRING_TYPE { $$ = "STRING_TYPE"; }
     | INT_ARRAY_TYPE { $$ = "INT_ARRAY_TYPE"; }
     | BOOL_TYPE { $$ = "BOOL_TYPE"; }
     ;
 
-boolean:
+boolean: // Boolean literals
     BOOL_TRUE { $$ = "BOOL_TRUE"; }
     | BOOL_FALSE { $$ = "BOOL_FALSE"; }
-    ; // Boolean literals
+    ; 
 
 var_declaration_expressions:
     integer_expression { $$ = $1; }
     | string_expression { $$ = $1; }
-    /* | array_expression */
+    | array_expression { $$ = $1; }
     | boolean_expression { $$ = $1; }
     | IDENTIFIER { 
         $$ = createNode(
@@ -129,9 +134,24 @@ string_expression:
     }
     ; // Handles strings and identifiers in expressions
 
-/* array_expression:
-    CONDITION_BEGIN assigned_array_digits CONDITION_END
-    ; // Arrays can be assigned directly or using condition delimiters */
+array_expression:
+    CONDITION_BEGIN assigned_array_digits CONDITION_END { $$ = $2; }
+    ; // Arrays can be assigned directly or using condition delimiters
+
+assigned_array_digits:
+    INTEGER { 
+        $$ = createNode(
+            "CONSTANT", 
+            createNode($1, NULL, NULL), 
+            NULL); 
+    }
+    | INTEGER ARRAY_DECLARATION_DIVIDER assigned_array_digits{
+        $$ = createNode(
+            "ARRAY_DECLARATION_DIVIDER", 
+            createNode($1, $3, NULL), 
+            NULL);
+    }
+    ; // Handles assignment of multiple integers to an array
 
 boolean_expression:
     boolean { 
@@ -147,13 +167,13 @@ boolean_expression:
 expr:
     expr INTEGER_ADDITION term { $$ = createNode("INTEGER_ADDITION", $1, $3); }
     | expr INTEGER_SUBTRACTION term { $$ = createNode("INTEGER_SUBTRACTION", $1, $3); }
-    | term { $$ = $1; }
+    | term { $$ = $1; } // Non terminal nodes should be returned as is
 ;
 
 term:
     term INTEGER_MULTIPLICATION factor { $$ = createNode("INTEGER_MULTIPLICATION", $1, $3); }
     | term INTEGER_DIVISION factor { $$ = createNode("INTEGER_DIVISION", $1, $3); }
-    | factor { $$ = $1; }
+    | factor { $$ = $1; }  // Non terminal nodes should be returned as is
 ;
 
 factor:
@@ -176,12 +196,6 @@ factor:
     | for_loop END_OF_LINE
     | while_loop END_OF_LINE
     ; // Each statement is one of several valid constructs
-
-assigned_array_digits:
-    INTEGER
-    | INTEGER ARRAY_DECLARATION_DIVIDER assigned_array_digits
-    ; // Handles assignment of multiple integers to an array
-
 
 
 term:

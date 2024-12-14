@@ -13,7 +13,7 @@
 
 [0-9]+ {
     // yylval.num = atoi(yytext);
-    yylval.str = strdup(yytext);
+    yylval.str = strdup(yytext); // return as string due to IR being string-based
     return INTEGER;
 }
 
