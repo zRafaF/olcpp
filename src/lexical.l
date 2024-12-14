@@ -16,16 +16,14 @@
     yylval.str = strdup(yytext); // return as string due to IR being string-based
     return INTEGER;
 }
+\r?\n { return END_OF_LINE; } // Handle both Unix (`\n`) and Windows (`\r\n`) line endings
 
-\n+ { /* Ignore whitespace */ }
+[ \t]+ { /* Ignore spaces and tabs */ }
 
-[ \t\n]+ { /* Ignore whitespace */ }
-
-[ \r\n]+ { /* Ignore whitespace */ }
 
 
     
-"👅".* { /* Ignore comments*/ }
+👅.* { /* Ignore comments*/ }
 
 "(" { return PARENTHESIS_OPEN; }   // Return '(' token
 ")" { return PARENTHESIS_CLOSE; }   // Return ')' token

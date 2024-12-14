@@ -1,3 +1,5 @@
+
+
 %{
     // Definitions and includes
     #include <stdio.h>
@@ -37,7 +39,7 @@
 %type <node> var_assignment
 %type <str> var_declaration_types boolean 
 
-/* %token END_OF_LINE    // Marks the end of a line */
+%token END_OF_LINE    // Marks the end of a line
 
 // Keywords and operators used in the language
 %token PROGRAM_BEGIN PROGRAM_END INTEGER_TYPE STRING_TYPE INT_ARRAY_TYPE BOOL_TYPE BOOL_TRUE BOOL_FALSE
@@ -59,7 +61,12 @@
 // Grammar rules
 %%
 program:
-    PROGRAM_BEGIN statement_list PROGRAM_END { root = $2; }
+    PROGRAM_BEGIN e_o_l statement_list optional_end_of_lines PROGRAM_END { root = $3; }
+;
+
+optional_end_of_lines:
+    /* empty */ { /* Do nothing */ }
+    | END_OF_LINE optional_end_of_lines 
 ;
 
 statement_list:
@@ -67,10 +74,12 @@ statement_list:
     | statement { $$ = $1; }
 ;
 
+e_o_l: { /* Skip extra END_OF_LINE tokens */ }
+    END_OF_LINE optional_end_of_lines
+
 statement:
-    var_declaration { $$ = $1; }
-    | var_assignment  { $$ = $1; }
-    | expr { $$ = $1; }
+    var_declaration e_o_l { $$ = $1; }
+    | var_assignment e_o_l { $$ = $1; }
 ;
 
 var_assignment:
