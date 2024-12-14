@@ -35,8 +35,8 @@
 🔤 { return STRING_TYPE; }
 🔢 { return INT_ARRAY_TYPE; }
 ⁉️ { return BOOL_TYPE; }
-✅ { return BOOL_TRUE; }
-❌ { return BOOL_FALSE; }
+✅ { return TRUE; }
+❌ { return FALSE; }
 
 👉([^👈]+)👈 {
     char *str = strdup(yytext);
