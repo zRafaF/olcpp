@@ -1,7 +1,7 @@
 {
   "instruction": "VARIABLE_DECLARATION",
   "value": {
-    "instruction": "y",
+    "instruction": "my_string",
     "value": {
       "instruction": "STRING_TYPE",
       "value": { "instruction": "CONSTANT", "value": { "instruction": "abcd" } }
@@ -10,76 +10,59 @@
   "next": {
     "instruction": "VARIABLE_DECLARATION",
     "value": {
-      "instruction": "myu",
+      "instruction": "bool2",
       "value": {
-        "instruction": "INTEGER_TYPE",
-        "value": { "instruction": "CONSTANT", "value": { "instruction": "10" } }
+        "instruction": "BOOL_TYPE",
+        "value": {
+          "instruction": "EQUAL",
+          "value": {
+            "instruction": "CONSTANT",
+            "value": { "instruction": "2" }
+          },
+          "next": { "instruction": "CONSTANT", "value": { "instruction": "2" } }
+        }
       }
     },
     "next": {
-      "instruction": "VARIABLE_DECLARATION",
+      "instruction": "ASSIGN",
       "value": {
-        "instruction": "myu2",
+        "instruction": "bool2",
         "value": {
-          "instruction": "BOOL_TYPE",
+          "instruction": "OR",
           "value": {
-            "instruction": "CONSTANT",
-            "value": { "instruction": "TRUE" }
-          }
-        }
-      },
-      "next": {
-        "instruction": "VARIABLE_DECLARATION",
-        "value": {
-          "instruction": "my_vector",
-          "value": {
-            "instruction": "INT_ARRAY_TYPE",
+            "instruction": "NOT_EQUAL",
             "value": {
-              "instruction": "ARRAY",
+              "instruction": "CONSTANT",
+              "value": { "instruction": "abcd" }
+            },
+            "next": {
+              "instruction": "NEGATION",
               "value": {
-                "instruction": "CONSTANT",
-                "value": { "instruction": "23" },
-                "next": {
-                  "instruction": "CONSTANT",
-                  "value": { "instruction": "3" },
-                  "next": {
-                    "instruction": "VARIABLE",
-                    "value": { "instruction": "myu" }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "next": {
-          "instruction": "ASSIGN",
-          "value": {
-            "instruction": "my_vector",
-            "value": {
-              "instruction": "ARRAY",
-              "value": {
-                "instruction": "CONSTANT",
-                "value": { "instruction": "1" },
-                "next": {
-                  "instruction": "CONSTANT",
-                  "value": { "instruction": "1" },
-                  "next": {
-                    "instruction": "CONSTANT",
-                    "value": { "instruction": "1" }
-                  }
-                }
+                "instruction": "VARIABLE",
+                "value": { "instruction": "my_string" }
               }
             }
           },
           "next": {
-            "instruction": "ASSIGN",
+            "instruction": "AND",
             "value": {
-              "instruction": "myu",
-              "value": {
-                "instruction": "VARIABLE",
-                "value": { "instruction": "y" }
-              }
+              "instruction": "VARIABLE",
+              "value": { "instruction": "bool2" }
+            },
+            "next": {
+              "instruction": "CONSTANT",
+              "value": { "instruction": "FALSE" }
             }
+          }
+        }
+      },
+      "next": {
+        "instruction": "ASSIGN",
+        "value": {
+          "instruction": "myu",
+          "value": {
+            "instruction": "VARIABLE",
+            "value": { "instruction": "y" }
           }
         }
       }

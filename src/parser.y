@@ -36,7 +36,7 @@
 // Non terminal definitions
 %type <node> program statement_list statement expr term factor var_declaration var_declaration_expressions 
 %type <node> integer_expression string_expression boolean_expression array_expression assigned_array_digits
-%type <node> var_assignment
+%type <node> var_assignment boolean_condition_body expression_value
 %type <str> var_declaration_types boolean 
 
 %token END_OF_LINE    // Marks the end of a line
@@ -120,7 +120,7 @@ var_declaration_expressions:
     integer_expression { $$ = $1; }
     | string_expression { $$ = $1; }
     | array_expression { $$ = $1; }
-    | boolean_expression { $$ = $1; }
+    | boolean_condition_body { $$ = $1; }
     | IDENTIFIER { 
         $$ = createNode(
             "VARIABLE", 
@@ -187,16 +187,54 @@ assigned_array_digits:
     }
     ;
 
+
+
+/* condition:
+    CONDITION_BEGIN boolean_condition_body CONDITION_END { $$ = $2; }
+    ; */
+boolean_condition_body:
+    boolean_expression { $$ = $1; }
+    | boolean_condition_body AND boolean_condition_body {
+        $$ = createNode(
+            "AND", 
+            $1, 
+            $3);
+    }
+    | boolean_condition_body OR boolean_condition_body {
+        $$ = createNode(
+            "OR", 
+            $1, 
+            $3);
+    }
+    | PARENTHESIS_OPEN boolean_condition_body PARENTHESIS_CLOSE { $$ = $2; }
+    | boolean_condition_body EQUAL boolean_condition_body { $$ = createNode("EQUAL", $1, $3); }
+    | boolean_condition_body NOT_EQUAL boolean_condition_body { $$ = createNode("NOT_EQUAL", $1, $3); }
+    ;
+
 boolean_expression:
-    boolean { 
+    expression_value { $$ = $1; }
+    | term GREATER_THAN term { $$ = createNode("GREATER_THAN", $1, $3); }
+    | term LESS_THAN term { $$ = createNode("LESS_THAN", $1, $3); }
+    | term GREATER_THAN_EQUAL term { $$ = createNode("GREATER_THAN_EQUAL", $1, $3); }
+    | term LESS_THAN_EQUAL term { $$ = createNode("LESS_THAN_EQUAL", $1, $3); }
+    ; // Logical and comparison expressions
+
+expression_value:
+    STRING { 
         $$ = createNode(
             "CONSTANT", 
             createNode($1, NULL, NULL), 
             NULL); 
     }
-    /* | condition */
+    | term { $$ = $1; }
+    | boolean { 
+        $$ = createNode(
+            "CONSTANT", 
+            createNode($1, NULL, NULL), 
+            NULL); 
+    }
+    | NEGATION expression_value { $$ = createNode("NEGATION", $2, NULL); }
     ;
-
 
 expr:
     expr INTEGER_ADDITION term { $$ = createNode("INTEGER_ADDITION", $1, $3); }
@@ -248,9 +286,7 @@ assignment:
     | IDENTIFIER ASSIGN CONDITION_BEGIN assigned_array_digits CONDITION_END
     ; // Assignment syntax for different types
 
-condition:
-    CONDITION_BEGIN condition_body CONDITION_END
-    ;
+
 
 condition_body:
     expression
@@ -258,22 +294,9 @@ condition_body:
     | condition_body OR expression
     ;
 
-expression:
-    boolean
-    | term GREATER_THAN term
-    | term LESS_THAN term
-    | term GREATER_THAN_EQUAL term
-    | term LESS_THAN_EQUAL term
-    | expression_value EQUAL expression_value
-    | expression_value NOT_EQUAL expression_value
-    | NEGATION expression
-    ; // Logical and comparison expressions
 
-expression_value:
-    STRING
-    | term
-    | boolean
-    ;
+
+
 
 if:
     IF_START condition END_OF_LINE program_body IF_END
