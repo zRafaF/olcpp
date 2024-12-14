@@ -1,46 +1,39 @@
 {
   "instruction": "VARIABLE_DECLARATION",
   "value": {
-    "instruction": "i",
+    "instruction": "myArray",
     "value": {
-      "instruction": "INTEGER_TYPE",
-      "value": { "instruction": "CONSTANT", "value": { "instruction": "1" } }
-    }
-  },
-  "next": {
-    "instruction": "FOR_LOOP",
-    "value": {
-      "instruction": "FOR",
+      "instruction": "INT_ARRAY_TYPE",
       "value": {
-        "instruction": "LESS_THAN",
-        "value": { "instruction": "VARIABLE", "value": { "instruction": "i" } },
-        "next": { "instruction": "CONSTANT", "value": { "instruction": "45" } }
-      },
-      "next": {
-        "instruction": "FOR_ASSIGN",
+        "instruction": "ARRAY",
         "value": {
-          "instruction": "ASSIGN",
-          "value": {
-            "instruction": "i",
-            "value": {
-              "instruction": "INTEGER_ADDITION",
-              "value": {
-                "instruction": "VARIABLE",
-                "value": { "instruction": "i" }
-              },
+          "instruction": "CONSTANT",
+          "value": { "instruction": "0" },
+          "next": {
+            "instruction": "CONSTANT",
+            "value": { "instruction": "1" },
+            "next": {
+              "instruction": "CONSTANT",
+              "value": { "instruction": "2" },
               "next": {
                 "instruction": "CONSTANT",
-                "value": { "instruction": "1" }
+                "value": { "instruction": "3" }
               }
             }
           }
-        },
-        "next": {
-          "instruction": "PRINT_STATEMENT",
-          "value": {
-            "instruction": "VARIABLE",
-            "value": { "instruction": "i" }
-          }
+        }
+      }
+    }
+  },
+  "next": {
+    "instruction": "VARIABLE_DECLARATION",
+    "value": {
+      "instruction": "i",
+      "value": {
+        "instruction": "INTEGER_TYPE",
+        "value": {
+          "instruction": "ACCESS_ARRAY",
+          "value": { "instruction": "myArray", "value": { "instruction": "0" } }
         }
       }
     },
@@ -49,49 +42,15 @@
       "value": {
         "instruction": "i",
         "value": {
-          "instruction": "CONSTANT",
-          "value": { "instruction": "100" }
+          "instruction": "ACCESS_ARRAY",
+          "value": { "instruction": "myArray", "value": { "instruction": "3" } }
         }
       },
       "next": {
-        "instruction": "WHILE_LOOP",
+        "instruction": "PRINT_STATEMENT",
         "value": {
-          "instruction": "WHILE",
-          "value": {
-            "instruction": "GREATER_THAN",
-            "value": {
-              "instruction": "VARIABLE",
-              "value": { "instruction": "i" }
-            },
-            "next": {
-              "instruction": "CONSTANT",
-              "value": { "instruction": "5" }
-            }
-          },
-          "next": {
-            "instruction": "ASSIGN",
-            "value": {
-              "instruction": "i",
-              "value": {
-                "instruction": "INTEGER_SUBTRACTION",
-                "value": {
-                  "instruction": "VARIABLE",
-                  "value": { "instruction": "i" }
-                },
-                "next": {
-                  "instruction": "CONSTANT",
-                  "value": { "instruction": "100" }
-                }
-              }
-            }
-          }
-        },
-        "next": {
-          "instruction": "PRINT_STATEMENT",
-          "value": {
-            "instruction": "CONSTANT",
-            "value": { "instruction": "Fim do programa" }
-          }
+          "instruction": "CONSTANT",
+          "value": { "instruction": "Fim do programa" }
         }
       }
     }

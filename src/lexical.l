@@ -57,6 +57,7 @@
 
 🪣 { return VARIABLE_DECLARATION; }
 🚬 { return ARRAY_DECLARATION_DIVIDER; }
+🔎 { return ACCESS_ARRAY; }
 ➕ { return INTEGER_ADDITION; }
 ➖ { return INTEGER_SUBTRACTION; }
 ✖ { return INTEGER_MULTIPLICATION; }
@@ -90,10 +91,7 @@
     return IDENTIFIER;          // Return the IDENTIFIER token
 }
 
-[a-zA-Z_] { // Needs to be declared last
-    yylval.str = strdup(yytext); // Copy the identifier name
-    return IDENTIFIER;          // Return the IDENTIFIER token
-}
+
 
 
 

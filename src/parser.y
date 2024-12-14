@@ -41,7 +41,7 @@
 %token END_OF_LINE    // Marks the end of a line
 
 // Keywords and operators used in the language
-%token PROGRAM_BEGIN PROGRAM_END INTEGER_TYPE STRING_TYPE INT_ARRAY_TYPE BOOL_TYPE TRUE FALSE
+%token PROGRAM_BEGIN PROGRAM_END INTEGER_TYPE STRING_TYPE INT_ARRAY_TYPE BOOL_TYPE TRUE FALSE ACCESS_ARRAY
 %token VARIABLE_DECLARATION ARRAY_DECLARATION_DIVIDER INTEGER_ADDITION INTEGER_SUBTRACTION INTEGER_MULTIPLICATION
 %token INTEGER_DIVISION INTEGER_MODULUS GREATER_THAN LESS_THAN GREATER_THAN_EQUAL LESS_THAN_EQUAL EQUAL
 %token NOT_EQUAL NEGATION AND OR IF_START IF_END ELSE CONDITION_BEGIN CONDITION_END FOR_BEGIN FOR_END
@@ -91,6 +91,12 @@ var_assignment:
         $$ = createNode(
             "ASSIGN", 
             createNode($1, $3, NULL), 
+            NULL);
+    }
+    | IDENTIFIER ACCESS_ARRAY INTEGER ASSIGN var_declaration_expressions {
+        $$ = createNode(
+            "ASSIGN_ARRAY", 
+            createNode($1, createNode($3, NULL, NULL), $5), 
             NULL);
     }
     ;
@@ -144,6 +150,12 @@ integer_expression:
             NULL); 
     }
     | expr { $$ = $1; }
+    | IDENTIFIER ACCESS_ARRAY INTEGER { 
+        $$ = createNode(
+            "ACCESS_ARRAY", 
+            createNode($1, createNode($3, NULL, NULL), NULL), 
+            NULL);
+    }
     ; // Handles integers and identifiers in expressions
 
 string_expression:
