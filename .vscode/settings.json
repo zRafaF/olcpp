@@ -17,6 +17,7 @@
     "noinput",
     "nounput",
     "perror",
+    "raposeitor",
     "stdbool",
     "strdup",
     "yyerror",
