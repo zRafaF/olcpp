@@ -258,3 +258,25 @@ x 🟰 (a ➕ b) ✖ (c ➖ d)
 👅 Este é um comentário explicativo
 👎️
 ```
+
+## 10. Acessando Elementos de Vetores
+
+### Sintaxe:
+
+```plaintext
+IDENTIFICADOR 🔎 INDEX
+```
+
+### Exemplo:
+
+```plaintext
+👍
+
+️🪣 minha_array 🔢 🟰 🫸0🚬1🚬2🚬3🫷
+
+🪣 x 💯 🟰 minha_array 🔎 2
+
+👎️
+```
+
+Neste exemplo, o valor `2` do vetor `minha_array` é atribuído à variável `x`.
