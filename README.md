@@ -2,6 +2,11 @@
 
 Este repositório contém um compilador simples para a linguagem OLCPP, com ferramentas de análise léxica e sintática para o **Assembly Raposeitor**.
 
+## Grupo
+
+- Rafael F. Meneses
+- Reinaldo K. Neto
+
 ## Pipeline
 
 O compilador é dividido em etapas:
@@ -13,6 +18,10 @@ O compilador é dividido em etapas:
 5. Geração de Código
 
 O código intermediário (IR) é representado através de uma árvore sintática abstrata (AST) em formato `.JSON`. A AST é gerada durante a análise sintática e é utilizada para a análise semântica e geração de código.
+
+## Documentação
+
+Para mais informações sobre a linguagem OLCPP, consulte o diretório `docs/`. Lá você encontrará a documentação da linguagem, incluindo a gramática, exemplos de código.
 
 ## Requerimentos
 
