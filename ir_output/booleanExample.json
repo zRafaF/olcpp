@@ -1,0 +1,71 @@
+{
+  "instruction": "VARIABLE_DECLARATION",
+  "value": {
+    "instruction": "my_string",
+    "value": {
+      "instruction": "STRING_TYPE",
+      "value": { "instruction": "CONSTANT", "value": { "instruction": "abcd" } }
+    }
+  },
+  "next": {
+    "instruction": "VARIABLE_DECLARATION",
+    "value": {
+      "instruction": "bool2",
+      "value": {
+        "instruction": "BOOL_TYPE",
+        "value": {
+          "instruction": "EQUAL",
+          "value": {
+            "instruction": "CONSTANT",
+            "value": { "instruction": "2" }
+          },
+          "next": { "instruction": "CONSTANT", "value": { "instruction": "2" } }
+        }
+      }
+    },
+    "next": {
+      "instruction": "ASSIGN",
+      "value": {
+        "instruction": "bool2",
+        "value": {
+          "instruction": "OR",
+          "value": {
+            "instruction": "NOT_EQUAL",
+            "value": {
+              "instruction": "CONSTANT",
+              "value": { "instruction": "abcd" }
+            },
+            "next": {
+              "instruction": "NEGATION",
+              "value": {
+                "instruction": "VARIABLE",
+                "value": { "instruction": "my_string" }
+              }
+            }
+          },
+          "next": {
+            "instruction": "AND",
+            "value": {
+              "instruction": "VARIABLE",
+              "value": { "instruction": "bool2" }
+            },
+            "next": {
+              "instruction": "CONSTANT",
+              "value": { "instruction": "FALSE" }
+            }
+          }
+        }
+      },
+      "next": {
+        "instruction": "ASSIGN",
+        "value": {
+          "instruction": "myu",
+          "value": {
+            "instruction": "VARIABLE",
+            "value": { "instruction": "y" }
+          }
+        }
+      }
+    }
+  }
+}

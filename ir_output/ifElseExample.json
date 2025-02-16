@@ -1,0 +1,218 @@
+{
+  "instruction": "VARIABLE_DECLARATION",
+  "value": {
+    "instruction": "bool2",
+    "value": {
+      "instruction": "BOOL_TYPE",
+      "value": {
+        "instruction": "EQUAL",
+        "value": { "instruction": "CONSTANT", "value": { "instruction": "2" } },
+        "next": { "instruction": "CONSTANT", "value": { "instruction": "2" } }
+      }
+    }
+  },
+  "next": {
+    "instruction": "IF_CONDITION",
+    "value": {
+      "instruction": "IF",
+      "value": {
+        "instruction": "VARIABLE",
+        "value": { "instruction": "bool2" }
+      },
+      "next": {
+        "instruction": "ASSIGN",
+        "value": {
+          "instruction": "bool2",
+          "value": {
+            "instruction": "CONSTANT",
+            "value": { "instruction": "FALSE" }
+          }
+        }
+      }
+    },
+    "next": {
+      "instruction": "IF_ELSE_CONDITION",
+      "value": {
+        "instruction": "IF",
+        "value": {
+          "instruction": "CONSTANT",
+          "value": { "instruction": "FALSE" }
+        },
+        "next": {
+          "instruction": "ASSIGN",
+          "value": {
+            "instruction": "bool2",
+            "value": {
+              "instruction": "CONSTANT",
+              "value": { "instruction": "TRUE" }
+            }
+          },
+          "next": {
+            "instruction": "ASSIGN",
+            "value": {
+              "instruction": "bool2",
+              "value": {
+                "instruction": "CONSTANT",
+                "value": { "instruction": "TRUE" }
+              }
+            }
+          }
+        }
+      },
+      "next": {
+        "instruction": "ELSE_CONDITION",
+        "value": {
+          "instruction": "ELSE",
+          "next": {
+            "instruction": "ASSIGN",
+            "value": {
+              "instruction": "bool2",
+              "value": {
+                "instruction": "CONSTANT",
+                "value": { "instruction": "FALSE" }
+              }
+            },
+            "next": {
+              "instruction": "ASSIGN",
+              "value": {
+                "instruction": "bool2",
+                "value": {
+                  "instruction": "CONSTANT",
+                  "value": { "instruction": "FALSE" }
+                }
+              }
+            }
+          }
+        },
+        "next": {
+          "instruction": "IF_ELSE_CONDITION",
+          "value": {
+            "instruction": "IF",
+            "value": {
+              "instruction": "CONSTANT",
+              "value": { "instruction": "FALSE" }
+            },
+            "next": {
+              "instruction": "ASSIGN",
+              "value": {
+                "instruction": "bool2",
+                "value": {
+                  "instruction": "CONSTANT",
+                  "value": { "instruction": "TRUE" }
+                }
+              },
+              "next": {
+                "instruction": "ASSIGN",
+                "value": {
+                  "instruction": "bool2",
+                  "value": {
+                    "instruction": "CONSTANT",
+                    "value": { "instruction": "TRUE" }
+                  }
+                }
+              }
+            }
+          },
+          "next": {
+            "instruction": "ELSE_IF_CONDITION",
+            "value": {
+              "instruction": "ELSE",
+              "next": {
+                "instruction": "IF_CONDITION",
+                "value": {
+                  "instruction": "IF",
+                  "value": {
+                    "instruction": "CONSTANT",
+                    "value": { "instruction": "TRUE" }
+                  },
+                  "next": {
+                    "instruction": "ASSIGN",
+                    "value": {
+                      "instruction": "bool2",
+                      "value": {
+                        "instruction": "EQUAL",
+                        "value": {
+                          "instruction": "CONSTANT",
+                          "value": { "instruction": "2" }
+                        },
+                        "next": {
+                          "instruction": "CONSTANT",
+                          "value": { "instruction": "2" }
+                        }
+                      }
+                    },
+                    "next": {
+                      "instruction": "ASSIGN",
+                      "value": {
+                        "instruction": "bool2",
+                        "value": {
+                          "instruction": "EQUAL",
+                          "value": {
+                            "instruction": "CONSTANT",
+                            "value": { "instruction": "2" }
+                          },
+                          "next": {
+                            "instruction": "CONSTANT",
+                            "value": { "instruction": "2" }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "next": {
+              "instruction": "PRINT_STATEMENT",
+              "value": {
+                "instruction": "CONSTANT",
+                "value": { "instruction": "Aninhados" }
+              },
+              "next": {
+                "instruction": "IF_CONDITION",
+                "value": {
+                  "instruction": "IF",
+                  "value": {
+                    "instruction": "VARIABLE",
+                    "value": { "instruction": "bool2" }
+                  },
+                  "next": {
+                    "instruction": "IF_CONDITION",
+                    "value": {
+                      "instruction": "IF",
+                      "value": {
+                        "instruction": "VARIABLE",
+                        "value": { "instruction": "bool2" }
+                      },
+                      "next": {
+                        "instruction": "PRINT_STATEMENT",
+                        "value": {
+                          "instruction": "CONSTANT",
+                          "value": { "instruction": "Dentro" }
+                        }
+                      }
+                    },
+                    "next": {
+                      "instruction": "PRINT_STATEMENT",
+                      "value": {
+                        "instruction": "CONSTANT",
+                        "value": { "instruction": "Fora" }
+                      }
+                    }
+                  }
+                },
+                "next": {
+                  "instruction": "PRINT_STATEMENT",
+                  "value": {
+                    "instruction": "CONSTANT",
+                    "value": { "instruction": "Fim do programa" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+mov %r0, 0
+jf 0, L1
+mov %r0, 1
+mov %r0, 1
+jump L2
+label L1
+jf 0, L3
+mov %r0, 1
+mov %r0, 1
+jump L4
+label L3
+printf 0
+printf 0
+label L4
+printf 0
+printf 0
+label L2
+jf 0, L5
+mov %r0, 1
+mov %r0, 1
+jump L6
+label L5
+printf 0
+printf 0
+label L6
+printf 0
+printf 0

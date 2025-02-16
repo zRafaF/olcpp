@@ -1,0 +1,108 @@
+{
+  "instruction": "VARIABLE_DECLARATION",
+  "value": {
+    "instruction": "y",
+    "value": {
+      "instruction": "STRING_TYPE",
+      "value": { "instruction": "CONSTANT", "value": { "instruction": "abcd" } }
+    }
+  },
+  "next": {
+    "instruction": "VARIABLE_DECLARATION",
+    "value": {
+      "instruction": "myu",
+      "value": {
+        "instruction": "INTEGER_TYPE",
+        "value": { "instruction": "CONSTANT", "value": { "instruction": "10" } }
+      }
+    },
+    "next": {
+      "instruction": "VARIABLE_DECLARATION",
+      "value": {
+        "instruction": "myu2",
+        "value": {
+          "instruction": "BOOL_TYPE",
+          "value": {
+            "instruction": "CONSTANT",
+            "value": { "instruction": "TRUE" }
+          }
+        }
+      },
+      "next": {
+        "instruction": "VARIABLE_DECLARATION",
+        "value": {
+          "instruction": "bool2",
+          "value": {
+            "instruction": "BOOL_TYPE",
+            "value": {
+              "instruction": "EQUAL",
+              "value": {
+                "instruction": "CONSTANT",
+                "value": { "instruction": "2" }
+              },
+              "next": {
+                "instruction": "CONSTANT",
+                "value": { "instruction": "2" }
+              }
+            }
+          }
+        },
+        "next": {
+          "instruction": "VARIABLE_DECLARATION",
+          "value": {
+            "instruction": "my_vector",
+            "value": {
+              "instruction": "INT_ARRAY_TYPE",
+              "value": {
+                "instruction": "ARRAY",
+                "value": {
+                  "instruction": "CONSTANT",
+                  "value": { "instruction": "23" },
+                  "next": {
+                    "instruction": "CONSTANT",
+                    "value": { "instruction": "3" },
+                    "next": {
+                      "instruction": "VARIABLE",
+                      "value": { "instruction": "myu" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "next": {
+            "instruction": "ASSIGN",
+            "value": {
+              "instruction": "my_vector",
+              "value": {
+                "instruction": "ARRAY",
+                "value": {
+                  "instruction": "CONSTANT",
+                  "value": { "instruction": "1" },
+                  "next": {
+                    "instruction": "CONSTANT",
+                    "value": { "instruction": "1" },
+                    "next": {
+                      "instruction": "CONSTANT",
+                      "value": { "instruction": "1" }
+                    }
+                  }
+                }
+              }
+            },
+            "next": {
+              "instruction": "ASSIGN",
+              "value": {
+                "instruction": "myu",
+                "value": {
+                  "instruction": "VARIABLE",
+                  "value": { "instruction": "y" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

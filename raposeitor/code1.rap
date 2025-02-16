@@ -1,0 +1,35 @@
+mov %r0, 1
+label FOR_START
+lesseq %r1, %r0, 45
+jf %r1, FOR_END
+printf "\n"
+mov %r0, %r0
+mov %r1, 1
+add %r0, %r0, %r1
+mov %r1, 1
+mov %r0, %r0
+printv %r0
+mod %r2, %r0, 2
+equal %r3, %r2, 0
+jf %r3, L1
+printf "i e par"
+label L1
+jump FOR_START
+label FOR_END
+label FOR_START
+lesseq %r1, %r0, 45
+jf %r1, FOR_END
+printf "\n"
+mov %r0, %r0
+mov %r1, 1
+add %r0, %r0, %r1
+mov %r1, 1
+mov %r0, %r0
+printv %r0
+mod %r2, %r0, 2
+equal %r3, %r2, 0
+jf %r3, L2
+printf "i e par"
+label L2
+jump FOR_START
+label FOR_END
