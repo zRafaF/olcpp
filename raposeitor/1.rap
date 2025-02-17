@@ -1,12 +1,9 @@
 mov %r0, 1
-mov %r0, 0
 label L1
-less %r1, %r0, 45
-jf %r1, L2
+jle %r0, 45, L2
 printv %r0
-mod %r2, %r0, 2
-jf %r2, L3
-printf "i e par"
+jf 0, L3
+printf 0
 jump L4
 label L3
 label L4

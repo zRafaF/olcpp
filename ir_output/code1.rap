@@ -6,7 +6,7 @@ jf %r1, L2
 printv %r0
 mod %r2, %r0, 2
 jf %r2, L3
-printf "i e par"
+printf 0
 jump L4
 label L3
 label L4

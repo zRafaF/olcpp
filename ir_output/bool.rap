@@ -1,0 +1,2 @@
+mov %r0, "abcd"
+mov %r1, 0
