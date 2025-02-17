@@ -1,4 +1,0 @@
-printf "abcd"
-mov %r0, 0
-mov %r0, 0
-mov %r2, %r1
