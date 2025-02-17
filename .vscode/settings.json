@@ -1,5 +1,6 @@
 {
   "files.associations": {
+    "*.ino": "arduino",
     "parser.tab.h": "c",
     "system_error": "c",
     "type_traits": "c",
@@ -8,7 +9,14 @@
     "initializer_list": "c",
     "vector": "c",
     "xstring": "c",
-    "xutility": "c"
+    "xutility": "c",
+    "iostream": "cpp",
+    "iosfwd": "cpp",
+    "ostream": "cpp",
+    "fstream": "cpp",
+    "sstream": "cpp",
+    "string": "cpp",
+    "memory": "cpp"
   },
   "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google,  ColumnLimit: 0, IndentWidth: 4, TabWidth: 4}",
   "cSpell.words": [

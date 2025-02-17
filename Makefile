@@ -1,6 +1,8 @@
 # Compiler and flags
 CC = gcc
+CXX = g++
 CFLAGS = -Wall -I$(SRC_DIR)
+CXXFLAGS = -Wall -I$(SRC_DIR)
 
 # Directories
 GEN_DIR = gen
@@ -21,6 +23,7 @@ PARSER_TAB_H = $(GEN_DIR)/parser.tab.h
 
 # Final output
 OUTPUT = $(BUILD_DIR)/parser
+GENERATOR_OUTPUT = $(BUILD_DIR)/generator
 
 # Input files
 INPUT := examples/code1.olc
@@ -28,7 +31,8 @@ INPUT := examples/code1.olc
 # Intermediate Representation output
 IR_OUTPUT := ir_output/code1.json
 
-
+# Assembly output
+ASM_OUTPUT := ir_output/code1.rap
 
 # Echo colors
 COLOR_GREEN=\033[0;32m
@@ -36,18 +40,27 @@ COLOR_RED=\033[0;31m
 COLOR_BLUE=\033[0;34m
 END_COLOR=\033[0m
 
+# Generator source files
+GENERATOR_SRC = $(SRC_DIR)/semantic/generator.cpp \
+                $(SRC_DIR)/semantic/gen_for.cpp \
+                $(SRC_DIR)/semantic/gen_print_string.cpp
 
 # Phony targets (to ensure always run)
 .PHONY: all lexical parser clean run
 
 # Targets
-all: $(OUTPUT)
+all: $(OUTPUT) $(GENERATOR_OUTPUT)
 
 $(OUTPUT): $(PARSER_TAB_C) $(LEX_OUTPUT) $(SRC_FILES)
 	@mkdir -p $(BUILD_DIR)
 	# Shows the command being run
 	@echo $(CC) $(CFLAGS) -o $@ $(PARSER_TAB_C) $(LEX_OUTPUT) $(SRC_FILES) -lfl
 	$(CC) $(CFLAGS) -o $@ $(PARSER_TAB_C) $(LEX_OUTPUT) $(SRC_FILES) -lfl
+
+$(GENERATOR_OUTPUT): $(GENERATOR_SRC)
+	@mkdir -p $(BUILD_DIR)
+	@echo $(CXX) $(CXXFLAGS) -o $@ $(GENERATOR_SRC)
+	$(CXX) $(CXXFLAGS) -o $@ $(GENERATOR_SRC)
 
 $(GEN_DIR)/lex.yy.c: $(LEX_FILE)
 	@mkdir -p $(GEN_DIR)
@@ -62,11 +75,11 @@ lexical: $(LEX_OUTPUT)
 parser: $(PARSER_TAB_C) $(PARSER_TAB_H)
 
 # Run target that builds and runs the program with a given file
-run: $(OUTPUT)
+run: $(OUTPUT) $(GENERATOR_OUTPUT)
 	$(BUILD_DIR)/parser ${INPUT} ${IR_OUTPUT}
 	@echo "$(COLOR_GREEN)Output written to ${IR_OUTPUT}$(END_COLOR)"
-
-
+	$(GENERATOR_OUTPUT) ${IR_OUTPUT} ${ASM_OUTPUT}
+	@echo "$(COLOR_GREEN)Assembly code generated at ${ASM_OUTPUT}$(END_COLOR)"
 
 # Clean target
 clean:
