@@ -2,7 +2,7 @@
 CC = gcc
 CXX = g++
 CFLAGS = -Wall -I$(SRC_DIR)
-CXXFLAGS = -Wall -I$(SRC_DIR)
+CXXFLAGS = -Wall -I$(SRC_DIR) -std=c++20
 
 # Directories
 GEN_DIR = gen
@@ -40,10 +40,6 @@ COLOR_RED=\033[0;31m
 COLOR_BLUE=\033[0;34m
 END_COLOR=\033[0m
 
-# Generator source files
-GENERATOR_SRC = $(SRC_DIR)/semantic/generator.cpp \
-                $(SRC_DIR)/semantic/gen_for.cpp \
-                $(SRC_DIR)/semantic/gen_print_string.cpp
 
 # Phony targets (to ensure always run)
 .PHONY: all lexical parser clean run
@@ -57,10 +53,10 @@ $(OUTPUT): $(PARSER_TAB_C) $(LEX_OUTPUT) $(SRC_FILES)
 	@echo $(CC) $(CFLAGS) -o $@ $(PARSER_TAB_C) $(LEX_OUTPUT) $(SRC_FILES) -lfl
 	$(CC) $(CFLAGS) -o $@ $(PARSER_TAB_C) $(LEX_OUTPUT) $(SRC_FILES) -lfl
 
-$(GENERATOR_OUTPUT): $(GENERATOR_SRC)
+$(GENERATOR_OUTPUT): $(SRC_DIR)/semantic/main.cpp
 	@mkdir -p $(BUILD_DIR)
-	@echo $(CXX) $(CXXFLAGS) -o $@ $(GENERATOR_SRC)
-	$(CXX) $(CXXFLAGS) -o $@ $(GENERATOR_SRC)
+	@echo $(CXX) $(CXXFLAGS) -o $@ $<
+	$(CXX) $(CXXFLAGS) -o $@ $<
 
 $(GEN_DIR)/lex.yy.c: $(LEX_FILE)
 	@mkdir -p $(GEN_DIR)
