@@ -34,8 +34,17 @@ std::vector<std::shared_ptr<Code>> Generator::parseInstructions(json_value_s* ro
     json_object_s* object = json_value_as_object(root);
 
     const json_object_element_s* current = object->start;
+    std::cout << "Parsing instructions" << std::endl;
     while (current != nullptr) {
-        instructions.push_back(parse(json_value_as_object(current->value)));
+        std::cout << current->name->string << std::endl;
+
+        // instructions.push_back(parse(json_value_as_object(current->value)));
+
+        if (current->next == nullptr) {
+            break;
+        }
+        std::cout << "2" << std::endl;
+
         current = current->next;
     }
 
@@ -45,11 +54,13 @@ std::vector<std::shared_ptr<Code>> Generator::parseInstructions(json_value_s* ro
 std::shared_ptr<Code> Generator::parse(json_object_s* object) {
     std::shared_ptr<Code> code;
 
-    if (getInstruction(object) == "VARIABLE_DECLARATION") {
-        code = std::make_shared<GenVariableDeclaration>();
-    }
+    std::cout << getInstruction(object) << std::endl;
 
-    code->generate(object);
+    // if (getInstruction(object) == "VARIABLE_DECLARATION") {
+    //     code = std::make_shared<GenVariableDeclaration>();
+    // }
+
+    // code->generate(object);
 
     return code;
 }
