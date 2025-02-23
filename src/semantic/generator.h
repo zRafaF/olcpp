@@ -18,13 +18,13 @@ class Generator {
     std::vector<std::string> raposeitorOutput;
 
     void printChildrenInstructionsRecursively(std::shared_ptr<Code> code) {
-        if (code->children.empty()) {
+        if (code->getChildren().empty()) {
             return;
         }
-        for (auto& child : code->children) {
+        for (auto& child : code->getChildren()) {
             printChildrenInstructionsRecursively(child);
         }
-        std::cout << code->output << std::endl;
+        std::cout << code->getOutput() << std::endl;
     }
 
    public:
@@ -43,7 +43,7 @@ class Generator {
         }
 
         for (auto& instruction : instructions) {
-            std::cout << "Instruction: " << instruction->output << std::endl;
+            std::cout << "Instruction: " << instruction->getOutput() << std::endl;
             printChildrenInstructionsRecursively(instruction);
         }
     }
@@ -61,15 +61,15 @@ std::vector<std::shared_ptr<Code>> Generator::parseInstructions(json_value_s* ro
         IRNode valueNode = node.value();
 
         if (instruction == "VARIABLE_DECLARATION") {
-            std::shared_ptr<Code> code = std::make_shared<GenVariableDeclaration>();
+            std::shared_ptr<Code> code = std::make_shared<GenVariableDeclaration>(&variablesMap, &temporaryMap);
             instructions.push_back(code);
-            code->generate(valueNode, &variablesMap, &temporaryMap);
+            code->generate(valueNode);
         }
 
         if (instruction == "ASSIGN") {
-            std::shared_ptr<Code> code = std::make_shared<GenAssign>();
+            std::shared_ptr<Code> code = std::make_shared<GenAssign>(&variablesMap, &temporaryMap);
             instructions.push_back(code);
-            code->generate(valueNode, &variablesMap, &temporaryMap);
+            code->generate(valueNode);
         }
 
         node = node.next();

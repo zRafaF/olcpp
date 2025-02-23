@@ -3,6 +3,7 @@
 #include <assert.h>
 
 #include <iostream>
+#include <map>
 #include <memory>
 #include <string>
 #include <variant>
@@ -13,169 +14,132 @@
 #include "variable.h"
 
 class Code {
-   private:
-   public:
+   protected:
+    std::map<std::string, variable_s>* variablesMap;
+    std::map<std::string, variable_s>* temporaryMap;
     std::vector<std::shared_ptr<Code>> children;
-    std::string output;  // Output assembly code
+    std::string output;
 
-    virtual void generate(IRNode element,
-                          std::map<std::string, variable_s>* variablesMap,
-                          std::map<std::string, variable_s>* temporaryMap) {
-        assert(element);
-        assert(variablesMap != nullptr);
-        assert(temporaryMap != nullptr);
+    // Helper methods
+    void checkVariableExists(const std::string& name) {
+        if (variablesMap->find(name) == variablesMap->end()) {
+            semanticError("Undefined variable [" + name + "]");
+        }
     }
 
-    virtual ~Code() = default;  // Virtual destructor
+    void checkValueType(variable_type_e type, const std::string& value) {
+        if (!isVariableTypeValid(type, value)) {
+            semanticError("Invalid value for variable type");
+        }
+    }
+
+    std::string generateConstantAssignment(variable_s variable, const std::string& value) {
+        std::string out;
+        if (variable.type == INT) {
+            out = "mov %r" + std::to_string(variable.offset) + " " + value;
+        } else if (variable.type == STRING) {
+            for (char letter : value) {
+                out += "mov %r" + std::to_string(variable.offset) + " " + std::to_string(static_cast<int>(letter)) + "\n";
+                variable.offset++;
+            }
+            out += "mov %r" + std::to_string(variable.offset) + " 0";
+        }
+        return out;
+    }
+
+    std::string generateVariableAssignment(variable_s target, const variable_s& source) {
+        std::string out;
+        if (target.type == INT) {
+            out = "mov %r" + std::to_string(target.offset) + " %r" + std::to_string(source.offset);
+        } else if (target.type == STRING) {
+            for (unsigned i = 0; i < source.size; i++) {
+                out += "mov %r" + std::to_string(target.offset) + " %r" + std::to_string(source.offset + i) + "\n";
+                target.offset++;
+            }
+            out += "mov %r" + std::to_string(target.offset) + " 0";
+        }
+        return out;
+    }
+
+   public:
+    Code(std::map<std::string, variable_s>* vars,
+         std::map<std::string, variable_s>* temps)
+        : variablesMap(vars), temporaryMap(temps) {
+        assert(variablesMap && temporaryMap);
+    }
+
+    virtual void generate(IRNode element) {
+        assert(element);
+    }
+
+    virtual ~Code() = default;
+    std::string getOutput() const { return output; }
+    std::vector<std::shared_ptr<Code>> getChildren() const { return children; }
 };
 
 class GenVariableDeclaration : public Code {
-   private:
-    variable_type_e type;
-    std::string name;
-    std::string value;
-
-    std::string generateOutputConst(variable_s variable) {
-        if (type == INT) {
-            return "mov %r" + std::to_string(variable.offset) + " " + value;
-        } else {
-            std::string out = "";
-            for (auto letter : value) {
-                out += "mov %r" + std::to_string(variable.offset) + " " + std::to_string((int)letter) + "\n";
-                variable.offset++;
-            }
-            out += "mov %r" + std::to_string(variable.offset) + " 0";
-            return out;
-        }
-    }
-
-    std::string generateOutputVar(variable_s variable, std::map<std::string, variable_s>* variablesMap) {
-        variable_s accessVariable = variablesMap->at(value);
-
-        if (variable.type == INT) {
-            return "mov %r" + std::to_string(variable.offset) + " %r" + std::to_string(accessVariable.offset);
-        } else if (variable.type == STRING) {
-            std::string out = "";
-
-            for (unsigned int i = 0; i < accessVariable.size; i++) {
-                out += "mov %r" + std::to_string(variable.offset) + " %r" + std::to_string(accessVariable.offset + i) + "\n";
-                variable.offset++;
-            }
-            out += "mov %r" + std::to_string(variable.offset) + " 0";
-            return out;
-        } else {
-            semanticError("Tipo de variável inválido");
-        }
-        return "";
-    }
-
    public:
-    void generate(IRNode element,
-                  std::map<std::string, variable_s>* variablesMap,
-                  std::map<std::string, variable_s>* temporaryMap) override {
-        assert(element);
-        assert(variablesMap != nullptr);
-        assert(temporaryMap != nullptr);
+    GenVariableDeclaration(std::map<std::string, variable_s>* vars,
+                           std::map<std::string, variable_s>* temps)
+        : Code(vars, temps) {}
 
-        name = element.instruction();
-        type = parseVariableType(element.value().instruction());
+    void generate(IRNode element) override {
+        const std::string name = element.instruction();
+        const variable_type_e type = parseVariableType(element.value().instruction());
+        const std::string valueType = element.value().value().instruction();
+        const std::string value = element.value().value().value().instruction();
 
-        std::string valueType = element.value().value().instruction();
-        value = element.value().value().value().instruction();
-
-        unsigned int size = type == INT ? 1 : 1024;
-        unsigned int offset = 0;
-        for (auto& variable : *variablesMap) {
-            offset = variable.second.offset + variable.second.size;
+        // Calculate offset
+        unsigned offset = 0;
+        for (const auto& pair : *variablesMap) {
+            offset = pair.second.offset + pair.second.size;
         }
 
-        variable_s variable = variable_s(type, size, offset);
+        const variable_s newVar(type, type == INT ? 1 : 1024, offset);
 
-        if (variablesMap->find(name) != variablesMap->end()) {
-            semanticError("Variável [" + name + "] já foi declarada");
+        if (variablesMap->count(name)) {
+            semanticError("Duplicate variable [" + name + "]");
         }
-        variablesMap->insert({name, variable});
+        variablesMap->emplace(name, newVar);
 
         if (valueType == "CONSTANT") {
-            if (!isVariableTypeValid(type, value)) {
-                semanticError("Valor inválido para o tipo de variável");
-            }
-
-            output = generateOutputConst(variable);
-
+            checkValueType(type, value);
+            output = generateConstantAssignment(newVar, value);
         } else if (valueType == "VARIABLE") {
-            if (variablesMap->find(value) == variablesMap->end()) {
-                semanticError("Tentou acessar variável não declarada [" + value + "]");
-            }
-            output = generateOutputVar(variable, variablesMap);
+            checkVariableExists(value);
+            output = generateVariableAssignment(newVar, variablesMap->at(value));
         } else {
-            semanticError("Tipo de valor inválido");
+            semanticError("Invalid value type");
         }
     }
 };
 
 class GenAssign : public Code {
    public:
-    void generate(IRNode element,
-                  std::map<std::string, variable_s>* variablesMap,
-                  std::map<std::string, variable_s>* temporaryMap) override {
-        assert(element);
-        assert(variablesMap != nullptr);
-        assert(temporaryMap != nullptr);
+    GenAssign(std::map<std::string, variable_s>* vars,
+              std::map<std::string, variable_s>* temps)
+        : Code(vars, temps) {}
 
-        std::string variableName = element.instruction();
-        std::string valueType = element.value().instruction();
-        std::string value = element.value().value().instruction();
+    void generate(IRNode element) override {
+        const std::string varName = element.instruction();
+        checkVariableExists(varName);
 
-        if (variablesMap->find(variableName) == variablesMap->end()) {
-            semanticError("Tentou acessar variável não declarada [" + variableName + "]");
-        }
-
-        variable_s variable = variablesMap->at(variableName);
-
-        variablesMap->erase(variableName);
-        variablesMap->insert({variableName, variable});
+        const std::string valueType = element.value().instruction();
+        const std::string value = element.value().value().instruction();
+        variable_s target = variablesMap->at(varName);
 
         if (valueType == "CONSTANT") {
-            if (!isVariableTypeValid(variable.type, value)) {
-                semanticError("Valor inválido para o tipo de variável [" + variableName + "]");
-            }
-
-            if (variable.type == INT) {
-                output = "mov %r" + std::to_string(variable.offset) + " " + value;
-            } else if (variable.type == STRING) {
-                std::string out = "";
-                for (auto letter : value) {
-                    out += "mov %r" + std::to_string(variable.offset) + " " + std::to_string((int)letter) + "\n";
-                    variable.offset++;
-                }
-                out += "mov %r" + std::to_string(variable.offset) + " 0";
-                output = out;
-            }
+            checkValueType(target.type, value);
+            output = generateConstantAssignment(target, value);
         } else if (valueType == "VARIABLE") {
-            if (variablesMap->find(value) == variablesMap->end()) {
-                semanticError("Tentou acessar variável não declarada [" + value + "]");
+            checkVariableExists(value);
+            const variable_s source = variablesMap->at(value);
+            if (target.type != source.type) {
+                semanticError("Type mismatch");
             }
-
-            variable_s accessVariable = variablesMap->at(value);
-            if (variable.type != accessVariable.type) {
-                semanticError("Tipos de variáveis incompatíveis");
-            }
-
-            if (variable.type == INT) {
-                output = "mov %r" + std::to_string(variable.offset) + " %r" + std::to_string(accessVariable.offset);
-            } else if (variable.type == STRING) {
-                std::string out = "";
-                for (unsigned int i = 0; i < accessVariable.size; i++) {
-                    out += "mov %r" + std::to_string(variable.offset) + " %r" + std::to_string(accessVariable.offset + i) + "\n";
-                    variable.offset++;
-                }
-                out += "mov %r" + std::to_string(variable.offset) + " 0";
-                output = out;
-            }
-
+            output = generateVariableAssignment(target, source);
         } else {
-            semanticError("Tipo de valor inválido");
+            semanticError("Invalid value type");
         }
     }
 };
