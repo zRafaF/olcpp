@@ -68,10 +68,12 @@ std::vector<std::shared_ptr<Code>> Generator::parseInstructions(json_value_s* ro
             std::shared_ptr<Code> code = std::make_shared<GenVariableDeclaration>(&variablesMap, &temporaryMap);
             instructions.push_back(code);
             code->generate(valueNode);
-        }
-
-        if (instruction == "ASSIGN") {
+        } else if (instruction == "ASSIGN") {
             std::shared_ptr<Code> code = std::make_shared<GenAssign>(&variablesMap, &temporaryMap);
+            instructions.push_back(code);
+            code->generate(valueNode);
+        } else if (instruction == "PRINT_STATEMENT") {
+            std::shared_ptr<Code> code = std::make_shared<GenPrintStatement>(&variablesMap, &temporaryMap);
             instructions.push_back(code);
             code->generate(valueNode);
         }

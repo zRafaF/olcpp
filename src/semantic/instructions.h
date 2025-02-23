@@ -142,3 +142,42 @@ class GenAssign : public Code {
         }
     }
 };
+
+class GenPrintStatement : public Code {
+   public:
+    GenPrintStatement(std::map<std::string, variable_s>* vars,
+                      std::map<std::string, variable_s>* temps)
+        : Code(vars, temps) {}
+
+    void generate(IRNode element) override {
+        std::string valueType = element.instruction();
+        std::string value = element.value().instruction();
+
+        replaceNewlines(value);
+
+        if (valueType == "CONSTANT") {
+            output = "printf \"" + value + "\"";
+        } else if (valueType == "VARIABLE") {
+            checkVariableExists(value);
+            const variable_s source = variablesMap->at(value);
+            if (source.type == INT) {
+                output = "printv %r" + std::to_string(source.offset);
+            } else if (source.type == STRING) {
+                for (unsigned i = 0; i < source.size; i++) {
+                    output += "printv %r" + std::to_string(source.offset + i) + "\n";
+                }
+            }
+        } else {
+            semanticError("Invalid value type");
+        }
+    }
+
+   private:
+    void replaceNewlines(std::string& str) {
+        size_t pos = 0;
+        while ((pos = str.find('\n', pos)) != std::string::npos) {
+            str.replace(pos, 1, "\\n");
+            pos += 2;
+        }
+    }
+};

@@ -1,5 +1,5 @@
 mov %r0 1
-mov %r1 %r0
+mov %r1 32
 mov %r0 %r1
 mov %r2 3
 mov %r3 97
@@ -14,3 +14,5 @@ mov %r1030 49
 mov %r1031 50
 mov %r1032 51
 mov %r1033 0
+printf "Hello World \n"
+printv %r0
