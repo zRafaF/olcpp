@@ -5,9 +5,11 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
-#include "ir_helpers.h"
+#include "checkers.h"
+#include "ir_node.h"
 #include "variable.h"
 
 // enum
@@ -21,10 +23,10 @@ class Code {
     std::vector<std::shared_ptr<Code>> children;
     std::string output;  // Output assembly code
 
-    virtual void generate(json_object_element_s* element,
+    virtual void generate(IRNode element,
                           std::map<std::string, variable_s>* variablesMap,
                           std::map<std::string, variable_s>* temporaryMap) {
-        assert(element != nullptr);
+        assert(element);
         assert(variablesMap != nullptr);
         assert(temporaryMap != nullptr);
     }
@@ -38,30 +40,34 @@ class GenVariableDeclaration : public Code {
 
     std::string name;
 
-    std::string valueString;
-    int valueInt;
+    std::string value;
 
    public:
-    void generate(json_object_element_s* element,
+    void generate(IRNode element,
                   std::map<std::string, variable_s>* variablesMap,
                   std::map<std::string, variable_s>* temporaryMap) override {
-        assert(element != nullptr);
+        assert(element);
         assert(variablesMap != nullptr);
         assert(temporaryMap != nullptr);
 
-        const std::string variableName = getInstruction(element);
-        std::cout << "Variable Name: " << variableName << std::endl;
+        name = element.instruction();
+        type = parseVariableType(element.value().instruction());
 
-        const std::string variableType = getInstruction(getValue(element));
-        std::cout << "Variable Type: " << variableType << std::endl;
+        std::string valueType = element.value().value().instruction();
+        value = element.value().value().value().instruction();
 
-        variable_s variable(INT, 1, 0);
+        if (valueType == "CONSTANT") {
+            if (!isVariableTypeValid(type, value)) {
+                semanticError("Valor inválido para o tipo de variável");
+            }
+        } else if (valueType == "VARIABLE") {
+            if (variablesMap->find(element.value().value().instruction()) == variablesMap->end()) {
+                semanticError("Tentou acessar variável não declarada");
+            }
+        } else {
+            semanticError("Tipo de valor inválido");
+        }
 
-        variablesMap->insert(std::pair<std::string, variable_s>(variableName, variable));
-
-        name = variableName;
-        type = variableType == "int" ? INT : STRING;
-
-        std::cout << "mov %r0";
+        isVariableTypeValid(type, value);
     }
 };

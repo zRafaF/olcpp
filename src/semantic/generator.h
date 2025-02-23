@@ -6,7 +6,7 @@
 #include <string>
 
 #include "instructions.h"
-#include "ir_helpers.h"
+#include "ir_node.h"
 #include "variable.h"
 
 class Generator {
@@ -29,38 +29,20 @@ Generator::Generator(/* args */) {
 }
 
 std::vector<std::shared_ptr<Code>> Generator::parseInstructions(json_value_s* root) {
-    json_object_s* object = json_value_as_object(root);
-    json_object_element_s* current = object->start;
+    IRNode node(root);
+    while (node) {
+        const std::string instruction = node.instruction();
+        std::cout << "Parsing Instruction: " << instruction << std::endl;
 
-    while (current != nullptr) {
-        if (strcmp(current->name->string, "instruction") == 0) {
-            const std::string instruction = getInstruction(current);
-            std::cout << "Parsing Instruction: " << instruction << std::endl;
-
-            // Gets the IR value
-            json_object_element_s* value = getValue(current);
-            value = json_value_as_object(value->value)->start;
-            if (!value) {
-                break;
-            }
-
-            if (instruction == "VARIABLE_DECLARATION") {
-                std::shared_ptr<Code> code = std::make_shared<GenVariableDeclaration>();
-                instructions.push_back(code);
-                code->generate(value, &variablesMap, &temporaryMap);
-            }
+        if (instruction == "VARIABLE_DECLARATION") {
+            IRNode valueNode = node.value();
+            std::shared_ptr<Code> code = std::make_shared<GenVariableDeclaration>();
+            instructions.push_back(code);
+            code->generate(valueNode, &variablesMap, &temporaryMap);
         }
 
-        while (current->next && strcmp(current->next->name->string, "next") != 0) {
-            current = current->next;
-            std::cout << "Next1" << std::endl;
-        }
-        if (!current->next) {
-            break;
-        }
-        current = json_value_as_object(current->next->value)->start;
+        node = node.next();
     }
-
     return instructions;
 }
 

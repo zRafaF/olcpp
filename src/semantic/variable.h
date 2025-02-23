@@ -19,3 +19,12 @@ struct variable_s {
         return os;
     }
 };
+
+variable_type_e parseVariableType(const std::string type) {
+    if (type == "INTEGER_TYPE") {
+        return INT;
+    } else if (type == "STRING_TYPE") {
+        return STRING;
+    }
+    return INT;
+}

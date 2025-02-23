@@ -49,7 +49,8 @@
     "xlocinfo": "cpp",
     "xmemory": "cpp",
     "xstddef": "cpp",
-    "xtree": "cpp"
+    "xtree": "cpp",
+    "variant": "cpp"
   },
   "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google,  ColumnLimit: 0, IndentWidth: 4, TabWidth: 4}",
   "cSpell.words": [
