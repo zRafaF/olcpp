@@ -47,6 +47,10 @@ std::vector<std::shared_ptr<Code>> Generator::parseInstructions(json_value_s* ro
 }
 
 void Generator::printInstructions() {
+    std::cout
+        << std::endl
+        << std::endl;
+
     std::cout << "Variable Map" << std::endl;
     for (auto& variable : variablesMap) {
         std::cout << variable.first << std::endl;

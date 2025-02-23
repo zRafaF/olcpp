@@ -37,10 +37,21 @@ class Code {
 class GenVariableDeclaration : public Code {
    private:
     variable_type_e type;
-
     std::string name;
-
     std::string value;
+
+    std::string generateOutput(variable_s variable) {
+        if (type == INT) {
+            return "mov %r" + std::to_string(variable.offset) + " " + value;
+        } else {
+            std::string out = "";
+            for (auto letter : value) {
+                out += "mov %r" + std::to_string(variable.offset) + " " + std::to_string((int)letter) + "\n";
+                variable.offset++;
+            }
+            return out;
+        }
+    }
 
    public:
     void generate(IRNode element,
@@ -68,6 +79,20 @@ class GenVariableDeclaration : public Code {
             semanticError("Tipo de valor inválido");
         }
 
-        isVariableTypeValid(type, value);
+        unsigned int size = type == INT ? 1 : 1024;
+
+        unsigned int offset = 0;
+        for (auto& variable : *variablesMap) {
+            offset = variable.second.offset + variable.second.size;
+        }
+
+        variable_s variable = variable_s(type, size, offset);
+
+        if (variablesMap->find(name) != variablesMap->end()) {
+            semanticError("Variável [" + name + "] já foi declarada");
+        }
+        variablesMap->insert({name, variable});
+
+        output = generateOutput(variable);
     }
 };
