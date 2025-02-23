@@ -36,20 +36,27 @@ std::vector<std::shared_ptr<Code>> Generator::parseInstructions(json_value_s* ro
     const json_object_element_s* current = object->start;
     std::cout << "Parsing instructions" << std::endl;
     while (current != nullptr) {
-        std::cout << "Instruction: " << current->name->string << std::endl;
         if (strcmp(current->name->string, "instruction") == 0) {
             const std::string instruction = json_value_as_string(current->value)->string;
+            std::cout << "Instruction: " << instruction << std::endl;
+
+            current = current->next;
+            if (!current) {
+                break;
+            }
 
             if (instruction == "VARIABLE_DECLARATION") {
-                std::cout << "a: VARIABLE_DECLARATION" << std::endl;
+                std::shared_ptr<Code> code = std::make_shared<GenVariableDeclaration>();
+                instructions.push_back(code);
+                code->generate(json_value_as_object(current->value));
             }
         }
 
-        // Iterates over the json object until find the "next" key
-        while (current->next != nullptr && strcmp(current->next->name->string, "next") != 0) {
+        while (current->next && strcmp(current->next->name->string, "next") != 0) {
             current = current->next;
+            std::cout << "Next1" << std::endl;
         }
-        if (current->next == nullptr) {
+        if (!current->next) {
             break;
         }
         current = json_value_as_object(current->next->value)->start;
@@ -74,6 +81,6 @@ std::shared_ptr<Code> Generator::parse(json_object_s* object) {
 
 void Generator::printInstructions() {
     for (auto& instruction : instructions) {
-        instruction->generate(nullptr);
+        std::cout << "Instruction" << std::endl;
     }
 }
