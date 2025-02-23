@@ -18,6 +18,11 @@ bool isVariableTypeValid(variable_type_e type, std::string value) {
             semanticError("Invalid value for integer variable");
             return false;
         }
+    } else if (type == BOOL) {
+        if (value != "TRUE" && value != "FALSE") {
+            semanticError("Invalid value for boolean variable");
+            return false;
+        }
     }
     return true;
 }

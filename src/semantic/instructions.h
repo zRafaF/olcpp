@@ -42,13 +42,20 @@ class Code {
                 variable.offset++;
             }
             out += "mov %r" + std::to_string(variable.offset) + " 0";
+        } else if (variable.type == BOOL) {
+            out = "mov %r" + std::to_string(variable.offset) + " " + (value == "TRUE" ? "1" : "0");
         }
         return out;
     }
 
     std::string generateVariableAssignment(variable_s target, const variable_s& source) {
         std::string out;
-        if (target.type == INT) {
+
+        if (target.type != source.type) {
+            semanticError("Type mismatch of types " + std::to_string(target.type) + " and " + std::to_string(source.type));
+        }
+
+        if (target.type == INT || target.type == BOOL) {
             out = "mov %r" + std::to_string(target.offset) + " %r" + std::to_string(source.offset);
         } else if (target.type == STRING) {
             for (unsigned i = 0; i < source.size; i++) {
@@ -94,7 +101,7 @@ class GenVariableDeclaration : public Code {
             offset = pair.second.offset + pair.second.size;
         }
 
-        const variable_s newVar(type, type == INT ? 1 : 1024, offset);
+        const variable_s newVar(type, getVariableTypeSize(type), offset);
 
         if (variablesMap->count(name)) {
             semanticError("Duplicate variable [" + name + "]");

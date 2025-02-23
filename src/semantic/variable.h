@@ -4,6 +4,7 @@
 enum variable_type_e {
     INT,
     STRING,
+    BOOL
 };
 
 struct variable_s {
@@ -25,6 +26,15 @@ variable_type_e parseVariableType(const std::string type) {
         return INT;
     } else if (type == "STRING_TYPE") {
         return STRING;
+    } else if (type == "BOOL_TYPE") {
+        return BOOL;
     }
     return INT;
+}
+
+unsigned int getVariableTypeSize(variable_type_e type) {
+    if (type == STRING) {
+        return 1024;
+    }
+    return 1;
 }
