@@ -5,14 +5,15 @@
 #include <memory>
 #include <string>
 
+#include "code.h"
+#include "db.h"
 #include "instructions.h"
 #include "ir_node.h"
 #include "variable.h"
 
 class Generator {
    private:
-    std::map<std::string, variable_s> variablesMap;
-    std::map<std::string, variable_s> temporaryMap;
+    db_s dataBase;
 
     std::vector<std::shared_ptr<Code>> instructions;
     std::vector<std::string> raposeitorOutput;
@@ -37,7 +38,7 @@ class Generator {
             << std::endl;
 
         std::cout << "Variable Map" << std::endl;
-        for (auto& variable : variablesMap) {
+        for (auto& variable : dataBase.variablesMap) {
             std::cout << variable.first << std::endl;
             std::cout << variable.second << std::endl;
         }
@@ -59,26 +60,8 @@ class Generator {
 
 std::vector<std::shared_ptr<Code>> Generator::parseInstructions(json_value_s* root) {
     IRNode node(root);
-    while (node) {
-        const std::string instruction = node.instruction();
-        std::cout << "Parsing Instruction: " << instruction << std::endl;
-        IRNode valueNode = node.value();
 
-        if (instruction == "VARIABLE_DECLARATION") {
-            std::shared_ptr<Code> code = std::make_shared<GenVariableDeclaration>(&variablesMap, &temporaryMap);
-            instructions.push_back(code);
-            code->generate(valueNode);
-        } else if (instruction == "ASSIGN") {
-            std::shared_ptr<Code> code = std::make_shared<GenAssign>(&variablesMap, &temporaryMap);
-            instructions.push_back(code);
-            code->generate(valueNode);
-        } else if (instruction == "PRINT_STATEMENT") {
-            std::shared_ptr<Code> code = std::make_shared<GenPrintStatement>(&variablesMap, &temporaryMap);
-            instructions.push_back(code);
-            code->generate(valueNode);
-        }
+    instructions = parseNodeInstructions(node, &dataBase);
 
-        node = node.next();
-    }
     return instructions;
 }

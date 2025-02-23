@@ -28,15 +28,7 @@ int main(int argc, char* argv[]) {
     raposeitorGenerator.parseInstructions(root);
     raposeitorGenerator.printInstructions();
 
-    // std::cout << getInstruction(object) << std::endl;
-    // std::cout << getInstruction(getValue(object)) << std::endl;
-    // std::cout << json_value_as_string(getValue(getValue(object))->start->value)->string << std::endl;
-
-    // CodeGenContext ctx;
-    // generate_statement(input, ctx);
-
     std::string output = raposeitorGenerator.getOutput();
-
     std::ofstream output_file(argv[2]);
     if (!output_file) {
         std::cerr << "Error: Could not open output file.\n";
