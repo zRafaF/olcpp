@@ -46,6 +46,8 @@ END_COLOR=\033[0m
 # Targets
 all: $(OUTPUT) $(GENERATOR_OUTPUT)
 
+fresh: clean run
+
 $(OUTPUT): $(PARSER_TAB_C) $(LEX_OUTPUT) $(SRC_FILES)
 	@mkdir -p $(BUILD_DIR)
 	@echo "$(COLOR_BLUE)Building $(OUTPUT)...$(END_COLOR)"
