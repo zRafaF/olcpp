@@ -17,8 +17,6 @@ class Generator {
     std::vector<std::shared_ptr<Code>> instructions;
     std::vector<std::string> raposeitorOutput;
 
-    std::shared_ptr<Code> parse(json_object_s* object);
-
    public:
     Generator();
 
@@ -32,23 +30,24 @@ Generator::Generator(/* args */) {
 
 std::vector<std::shared_ptr<Code>> Generator::parseInstructions(json_value_s* root) {
     json_object_s* object = json_value_as_object(root);
-    const json_object_element_s* current = object->start;
+    json_object_element_s* current = object->start;
 
     while (current != nullptr) {
         if (strcmp(current->name->string, "instruction") == 0) {
-            const std::string instruction = json_value_as_string(current->value)->string;
+            const std::string instruction = getInstruction(current);
             std::cout << "Parsing Instruction: " << instruction << std::endl;
 
             // Gets the IR value
-            current = current->next;
-            if (!current) {
+            json_object_element_s* value = getValue(current);
+            value = json_value_as_object(value->value)->start;
+            if (!value) {
                 break;
             }
 
             if (instruction == "VARIABLE_DECLARATION") {
                 std::shared_ptr<Code> code = std::make_shared<GenVariableDeclaration>();
                 instructions.push_back(code);
-                code->generate(json_value_as_object(current->value), &variablesMap, &temporaryMap);
+                code->generate(value, &variablesMap, &temporaryMap);
             }
         }
 
@@ -65,27 +64,14 @@ std::vector<std::shared_ptr<Code>> Generator::parseInstructions(json_value_s* ro
     return instructions;
 }
 
-std::shared_ptr<Code> Generator::parse(json_object_s* object) {
-    std::shared_ptr<Code> code;
-
-    std::cout << getInstruction(object) << std::endl;
-
-    // if (getInstruction(object) == "VARIABLE_DECLARATION") {
-    //     code = std::make_shared<GenVariableDeclaration>();
-    // }
-
-    // code->generate(object);
-
-    return code;
-}
-
 void Generator::printInstructions() {
     std::cout << "Variable Map" << std::endl;
     for (auto& variable : variablesMap) {
         std::cout << variable.first << std::endl;
+        std::cout << variable.second << std::endl;
     }
 
     for (auto& instruction : instructions) {
-        std::cout << "Instruction" << std::endl;
+        std::cout << "Instruction: " << instruction->output << std::endl;
     }
 }

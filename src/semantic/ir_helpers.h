@@ -5,8 +5,8 @@
 
 #include "json.h"
 
-std::string getInstruction(const json_object_s* object) {
-    const json_object_element_s* current = object->start;
+std::string getInstruction(json_object_element_s* element) {
+    const json_object_element_s* current = element;
     while (current != nullptr) {
         if (strcmp(current->name->string, "instruction") == 0) {
             return json_value_as_string(current->value)->string;
@@ -16,22 +16,22 @@ std::string getInstruction(const json_object_s* object) {
     return "";  // Return an empty string if "instruction" is not found
 }
 
-const json_object_s* getValue(const json_object_s* object) {
-    const json_object_element_s* current = object->start;
+json_object_element_s* getValue(json_object_element_s* element) {
+    json_object_element_s* current = element;
     while (current != nullptr) {
         if (strcmp(current->name->string, "value") == 0) {
-            return json_value_as_object(current->value);
+            return current;
         }
         current = current->next;
     }
     return nullptr;
 }
 
-const json_object_s* getNext(const json_object_s* object) {
-    const json_object_element_s* current = object->start;
+json_object_element_s* getNext(json_object_element_s* element) {
+    json_object_element_s* current = element;
     while (current != nullptr) {
         if (strcmp(current->name->string, "next") == 0) {
-            return json_value_as_object(current->value);
+            return current;
         }
         current = current->next;
     }
