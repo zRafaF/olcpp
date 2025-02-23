@@ -28,7 +28,7 @@ class Generator {
     }
 
    public:
-    Generator();
+    Generator() {}
 
     std::vector<std::shared_ptr<Code>> parseInstructions(json_value_s* root);
     void printInstructions() {
@@ -47,11 +47,15 @@ class Generator {
             printChildrenInstructionsRecursively(instruction);
         }
     }
-};
 
-Generator::Generator(/* args */) {
-    std::cout << "Generator created" << std::endl;
-}
+    std::string getOutput() const {
+        std::string output;
+        for (const auto& instruction : instructions) {
+            output += instruction->getOutput() + "\n";
+        }
+        return output;
+    }
+};
 
 std::vector<std::shared_ptr<Code>> Generator::parseInstructions(json_value_s* root) {
     IRNode node(root);

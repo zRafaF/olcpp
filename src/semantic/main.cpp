@@ -35,13 +35,15 @@ int main(int argc, char* argv[]) {
     // CodeGenContext ctx;
     // generate_statement(input, ctx);
 
+    std::string output = raposeitorGenerator.getOutput();
+
     std::ofstream output_file(argv[2]);
     if (!output_file) {
         std::cerr << "Error: Could not open output file.\n";
         return 1;
     }
 
-    // output_file << ctx.code;
+    output_file << output;
     std::cout << "Assembly code generated successfully and written to " << argv[2] << std::endl;
 
     return 0;

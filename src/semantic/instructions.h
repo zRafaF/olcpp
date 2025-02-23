@@ -20,7 +20,6 @@ class Code {
     std::vector<std::shared_ptr<Code>> children;
     std::string output;
 
-    // Helper methods
     void checkVariableExists(const std::string& name) {
         if (variablesMap->find(name) == variablesMap->end()) {
             semanticError("Undefined variable [" + name + "]");

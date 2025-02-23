@@ -86,6 +86,9 @@ run: $(OUTPUT) $(GENERATOR_OUTPUT)
 	@echo "$(COLOR_BLUE)Running generator...$(END_COLOR)"
 	$(GENERATOR_OUTPUT) ${IR_OUTPUT} ${ASM_OUTPUT}
 	@echo "$(COLOR_GREEN)Assembly code generated at ${ASM_OUTPUT}$(END_COLOR)"
+	@echo "$(COLOR_BLUE)Running the interpreter...$(END_COLOR)"
+	python3 raposeitor/raposeitor.py ${ASM_OUTPUT}
+	@echo "$(COLOR_GREEN)Interpreter execution completed!$(END_COLOR)"
 
 # Clean target
 clean:
