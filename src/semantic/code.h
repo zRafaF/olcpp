@@ -235,9 +235,25 @@ class GenAssign : public Code {
             if (array.type != INT_ARRAY) {
                 semanticError("Tried to access an array from a non array variable");
             }
-            std::string index = element.value().value().value().value().instruction();
 
-            output = "load %r" + std::to_string(target.offset) + ", " + index + "(%r" + std::to_string(array.offset) + ")";
+            std::string indexType = element.value().value().value().value().instruction();
+            std::string indexValue = element.value().value().value().value().value().instruction();
+
+            std::cout << "INDEX TYPE: " << indexType << " INDEX VALUE: " << indexValue << std::endl;
+
+            if (indexType == "VARIABLE") {
+                checkVariableExists(indexValue, dataBase);
+                variable_s index = dataBase->variablesMap.at(indexValue);
+                if (index.type != INT) {
+                    semanticError("Tried to access an array with a non integer index");
+                }
+                output = "load %r" + std::to_string(target.offset) + ", %r" + std::to_string(index.offset) + "(%r" + std::to_string(array.offset) + ")";
+            } else if (indexType == "CONSTANT") {
+                checkValueType(INT, indexValue);
+                output = "load %r" + std::to_string(target.offset) + ", " + indexValue + "(%r" + std::to_string(array.offset) + ")";
+            } else {
+                semanticError("Invalid index type");
+            }
         }
 
         else {

@@ -32,7 +32,7 @@ jf %t0, end_for_3
 
 add %t1, %r7, 1
 mov %r7, %t1
-load %r8, VARIABLE(%r1)
+load %r8, %r7(%r1)
 printv %r8
 printf ", "
 jump begin_for_2
