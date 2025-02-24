@@ -118,6 +118,7 @@ class GenVariableDeclaration : public Code {
             checkVariableExists(value, dataBase);
             output = generateVariableAssignment(newVar, dataBase->variablesMap.at(value));
         } else if (valueType == "ARRAY") {
+            // TODO IMPLEMENT
             std::vector<int> values;
 
             IRNode arrayValue = element.value().value().value().value();
@@ -134,8 +135,7 @@ class GenVariableDeclaration : public Code {
 
                 arrayValue = arrayValue.next();
             }
-
-            newVar.size = values.size();
+            dataBase->variablesMap[name].size = values.size();
 
             for (unsigned i = 0; i < values.size(); i++) {
                 instructions.push_back(std::make_shared<Code>(dataBase, "mov %r" + std::to_string(newVar.offset + i) + " " + std::to_string(values[i])));
