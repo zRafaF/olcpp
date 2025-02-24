@@ -32,32 +32,31 @@ i 🟰 1
 
 🪣 aux 💯 🟰 0
 🪣 aux2 💯 🟰 0
+🪣 arr_j 💯 🟰 0
 
 
 🐣🫸i🔽vec_size🚭i 🟰 i ➕ 1🫷
     key 🟰 myArray🔎i
+
     j 🟰 i ➖ 1
-
-
-    🐳🫸j⏫0🫷
-        aux 🟰 myArray🔎j
-        🤔🫸aux🔼key🫷
+    🐣🫸j⏫0🚭j 🟰 j ➖ 1🫷
+        arr_j 🟰 myArray🔎j
+        🤔🫸arr_j🔼key🫷
             aux 🟰 j ➕ 1
-            aux2 🟰 myArray 🔎 j
-
-            myArray 🔎 aux  🟰 aux2
-
-            j 🟰 j ➖ 1
+            myArray🔎aux 🟰 arr_j
+        😬😒
+            j 🟰 0 ➖ 1
         😬
+    🐥
 
-        myArray 🔎 aux  🟰 key
-
-    🐋
+    aux 🟰 j ➕ 1
+    myArray 🔎 aux  🟰 key
 🐥
 
 
 💅🫸👉\nVetor de saida: 👈🫷
 
+i 🟰 0
 🐣🫸i🔽vec_size🚭i 🟰 i ➕ 1🫷
     aux_var 🟰 myArray🔎i
     💅🫸aux_var🫷
