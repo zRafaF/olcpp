@@ -312,17 +312,17 @@ print:
 // If statement control flow, the if content is on the "value" parameter, if the execution flow do not enter it it goes right to "next"
 if:
     IF_START condition e_o_l statement_list optional_end_of_lines IF_END{
-        $$ = createNode("IF_CONDITION", createNode("IF", $2, $4), NULL);
+        $$ = createNode("IF_CONDITION", createNode("IF", createNode("CONDITION", $2, $4), NULL), NULL);
     }
     | IF_START condition e_o_l statement_list optional_end_of_lines IF_END else{
-        $$ = createNode("IF_ELSE_CONDITION", createNode("IF", $2, $4), $7);
+        $$ = createNode("IF_ELSE_CONDITION", createNode("IF", createNode("CONDITION", $2, $4), $7), NULL);
     }
     ;
 
 // Else statement control flow, it can be an else or an else if
 else:
-    ELSE e_o_l statement_list optional_end_of_lines IF_END { $$ = createNode("ELSE_CONDITION", createNode("ELSE", NULL, $3), NULL); }
-    | ELSE if { $$ = createNode("ELSE_IF_CONDITION", createNode("ELSE", NULL, $2), NULL); }
+    ELSE e_o_l statement_list optional_end_of_lines IF_END { $$ =  createNode("ELSE", $3, NULL); }
+    | ELSE if { $$ = createNode("ELSE", $2, NULL); }
     ;
 
 // For loop control flow, the for loop content is on the "value" parameter

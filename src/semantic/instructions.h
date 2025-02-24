@@ -44,6 +44,8 @@ std::vector<std::shared_ptr<Code>> parseNodeInstructions(IRNode node, db_s* db) 
 
         else if (instruction == "IF") {
             code = std::make_shared<GenIf>(db);
+        } else if (instruction == "ELSE_IF_CONDITION") {
+            code = std::make_shared<GenElseIfCondition>(db);
         } else if (instruction == "IF_ELSE_CONDITION") {
             code = std::make_shared<GenIfElseCondition>(db);
         }

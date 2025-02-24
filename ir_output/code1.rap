@@ -1,43 +1,22 @@
 mov %r0 1
-mov %r1 1
-mov %r2 32
-mov %r1 %r2
-mov %r3 12
-mov %r4 97
-mov %r5 98
-mov %r6 99
-mov %r7 100
-mov %r8 0
-mov %r1028 49
-mov %r1029 50
-mov %r1030 51
-mov %r1031 49
-mov %r1032 50
-mov %r1033 51
-mov %r1034 0
-printf "Hello World \n"
 
 label begin_for_0
-less %t0, %r1, 45
+less %t0, %r0, 45
 jf %t0, end_for_1
 
-add %t1, %r1, 1
-mov %r1, %t1
-printv %r1
+add %t1, %r0, 1
+mov %r0, %t1
+printv %r0
 printf "\n"
 
 
-
-
-mod %t1, %r1, 2
-equal %t2, %t1, 0
-jf %t2, end_if_6
-label end_if_6
-printf "i e par \n"
-jf %t1, begin_else_3
-printf "i e par \n"
-jump end_if_else_4
-label begin_else_3
-label end_if_else_4
+printf "i is even \n"
+jf %t0, end_if_4
+printf "i is even \n"
+label end_if_4
+jf %t18446744073709551615, begin_else_2
+jump end_if_else_3
+label begin_else_2
+label end_if_else_3
 jump begin_for_0
 label end_for_1

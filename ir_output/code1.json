@@ -1,1 +1,129 @@
-{"instruction":"VARIABLE_DECLARATION","value":{"instruction":"myu2","value":{"instruction":"BOOL_TYPE","value":{"instruction":"CONSTANT","value":{"instruction":"TRUE"}}}},"next": {"instruction":"VARIABLE_DECLARATION","value":{"instruction":"i","value":{"instruction":"INTEGER_TYPE","value":{"instruction":"CONSTANT","value":{"instruction":"1"}}}},"next": {"instruction":"VARIABLE_DECLARATION","value":{"instruction":"a2","value":{"instruction":"INTEGER_TYPE","value":{"instruction":"CONSTANT","value":{"instruction":"32"}}}},"next": {"instruction":"ASSIGN","value":{"instruction":"i","value":{"instruction":"VARIABLE","value":{"instruction":"a2"}}},"next": {"instruction":"VARIABLE_DECLARATION","value":{"instruction":"b3","value":{"instruction":"INTEGER_TYPE","value":{"instruction":"CONSTANT","value":{"instruction":"12"}}}},"next": {"instruction":"VARIABLE_DECLARATION","value":{"instruction":"y","value":{"instruction":"STRING_TYPE","value":{"instruction":"CONSTANT","value":{"instruction":"abcd"}}}},"next": {"instruction":"VARIABLE_DECLARATION","value":{"instruction":"string","value":{"instruction":"STRING_TYPE","value":{"instruction":"CONSTANT","value":{"instruction":"123123"}}}},"next": {"instruction":"PRINT_STATEMENT","value":{"instruction":"CONSTANT","value":{"instruction":"Hello World \n"}},"next": {"instruction":"FOR_LOOP","value":{"instruction":"FOR","value":{"instruction":"LESS_THAN","value":{"instruction":"VARIABLE","value":{"instruction":"i"}},"next": {"instruction":"CONSTANT","value":{"instruction":"45"}}},"next": {"instruction":"FOR_ASSIGN","value":{"instruction":"ASSIGN","value":{"instruction":"i","value":{"instruction":"INTEGER_ADDITION","value":{"instruction":"VARIABLE","value":{"instruction":"i"}},"next": {"instruction":"CONSTANT","value":{"instruction":"1"}}}}},"next": {"instruction":"PRINT_STATEMENT","value":{"instruction":"VARIABLE","value":{"instruction":"i"}},"next": {"instruction":"PRINT_STATEMENT","value":{"instruction":"CONSTANT","value":{"instruction":"\n"}},"next": {"instruction":"IF_ELSE_CONDITION","value":{"instruction":"IF","value":{"instruction":"EQUAL","value":{"instruction":"INTEGER_MODULUS","value":{"instruction":"VARIABLE","value":{"instruction":"i"}},"next": {"instruction":"CONSTANT","value":{"instruction":"2"}}},"next": {"instruction":"CONSTANT","value":{"instruction":"0"}}},"next": {"instruction":"PRINT_STATEMENT","value":{"instruction":"CONSTANT","value":{"instruction":"i e par \n"}}}},"next": {"instruction":"ELSE_IF_CONDITION","value":{"instruction":"ELSE","next": {"instruction":"IF_ELSE_CONDITION","value":{"instruction":"IF","value":{"instruction":"EQUAL","value":{"instruction":"VARIABLE","value":{"instruction":"i"}},"next": {"instruction":"CONSTANT","value":{"instruction":"25"}}},"next": {"instruction":"PRINT_STATEMENT","value":{"instruction":"CONSTANT","value":{"instruction":"i e igual a 25"}}}},"next": {"instruction":"ELSE_IF_CONDITION","value":{"instruction":"ELSE","next": {"instruction":"IF_ELSE_CONDITION","value":{"instruction":"IF","value":{"instruction":"LESS_THAN","value":{"instruction":"VARIABLE","value":{"instruction":"i"}},"next": {"instruction":"VARIABLE","value":{"instruction":"a2"}}},"next": {"instruction":"PRINT_STATEMENT","value":{"instruction":"CONSTANT","value":{"instruction":"i e menor que a2"}}}},"next": {"instruction":"ELSE_CONDITION","value":{"instruction":"ELSE","next": {"instruction":"PRINT_STATEMENT","value":{"instruction":"CONSTANT","value":{"instruction":"else"}}}}}}}}}}}}}}}}}}}}}}}}}
+{
+  "instruction": "VARIABLE_DECLARATION",
+  "value": {
+    "instruction": "i",
+    "value": {
+      "instruction": "INTEGER_TYPE",
+      "value": { "instruction": "CONSTANT", "value": { "instruction": "1" } }
+    }
+  },
+  "next": {
+    "instruction": "FOR_LOOP",
+    "value": {
+      "instruction": "FOR",
+      "value": {
+        "instruction": "LESS_THAN",
+        "value": { "instruction": "VARIABLE", "value": { "instruction": "i" } },
+        "next": { "instruction": "CONSTANT", "value": { "instruction": "45" } }
+      },
+      "next": {
+        "instruction": "FOR_ASSIGN",
+        "value": {
+          "instruction": "ASSIGN",
+          "value": {
+            "instruction": "i",
+            "value": {
+              "instruction": "INTEGER_ADDITION",
+              "value": {
+                "instruction": "VARIABLE",
+                "value": { "instruction": "i" }
+              },
+              "next": {
+                "instruction": "CONSTANT",
+                "value": { "instruction": "1" }
+              }
+            }
+          }
+        },
+        "next": {
+          "instruction": "PRINT_STATEMENT",
+          "value": {
+            "instruction": "VARIABLE",
+            "value": { "instruction": "i" }
+          },
+          "next": {
+            "instruction": "PRINT_STATEMENT",
+            "value": {
+              "instruction": "CONSTANT",
+              "value": { "instruction": "\n" }
+            },
+            "next": {
+              "instruction": "IF_ELSE_CONDITION",
+              "value": {
+                "instruction": "IF",
+                "value": {
+                  "instruction": "CONDITION",
+                  "value": {
+                    "instruction": "EQUAL",
+                    "value": {
+                      "instruction": "INTEGER_MODULUS",
+                      "value": {
+                        "instruction": "VARIABLE",
+                        "value": { "instruction": "i" }
+                      },
+                      "next": {
+                        "instruction": "CONSTANT",
+                        "value": { "instruction": "2" }
+                      }
+                    },
+                    "next": {
+                      "instruction": "CONSTANT",
+                      "value": { "instruction": "0" }
+                    }
+                  },
+                  "next": {
+                    "instruction": "PRINT_STATEMENT",
+                    "value": {
+                      "instruction": "CONSTANT",
+                      "value": { "instruction": "i is even \n" }
+                    }
+                  }
+                },
+                "next": {
+                  "instruction": "ELSE",
+                  "value": {
+                    "instruction": "IF_ELSE_CONDITION",
+                    "value": {
+                      "instruction": "IF",
+                      "value": {
+                        "instruction": "CONDITION",
+                        "value": {
+                          "instruction": "EQUAL",
+                          "value": {
+                            "instruction": "VARIABLE",
+                            "value": { "instruction": "i" }
+                          },
+                          "next": {
+                            "instruction": "CONSTANT",
+                            "value": { "instruction": "25" }
+                          }
+                        },
+                        "next": {
+                          "instruction": "PRINT_STATEMENT",
+                          "value": {
+                            "instruction": "CONSTANT",
+                            "value": { "instruction": "i is 25\n" }
+                          }
+                        }
+                      },
+                      "next": {
+                        "instruction": "ELSE",
+                        "value": {
+                          "instruction": "PRINT_STATEMENT",
+                          "value": {
+                            "instruction": "CONSTANT",
+                            "value": { "instruction": "else\n" }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
