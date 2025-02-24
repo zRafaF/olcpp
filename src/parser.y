@@ -99,11 +99,11 @@ var_assignment:
             createNode($1, $3, NULL), 
             NULL);
     }
-    | IDENTIFIER ACCESS_ARRAY INTEGER ASSIGN var_declaration_expressions {
+    | IDENTIFIER ACCESS_ARRAY integer_expression ASSIGN var_declaration_expressions {
         // Assign a value to an array element
         $$ = createNode(
             "ASSIGN_ARRAY", 
-            createNode($1, createNode($3, NULL, NULL), $5), 
+            createNode($1, $3, $5), 
             NULL);
     }
     ;
