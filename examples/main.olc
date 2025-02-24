@@ -17,7 +17,46 @@
 i 🟰 0
 
 🪣 aux_var 💯 🟰 0
-💅🫸👉\nVetor: 👈🫷
+💅🫸👉\nVetor de entrada: 👈🫷
+
+🐣🫸i🔽vec_size🚭i 🟰 i ➕ 1🫷
+    aux_var 🟰 myArray🔎i
+    💅🫸aux_var🫷
+    💅🫸👉, 👈🫷
+🐥
+
+
+i 🟰 1
+🪣 j 💯 🟰 0
+🪣 key 💯 🟰 0
+
+🪣 aux 💯 🟰 0
+🪣 aux2 💯 🟰 0
+
+
+🐣🫸i🔽vec_size🚭i 🟰 i ➕ 1🫷
+    key 🟰 myArray🔎i
+    j 🟰 i ➖ 1
+
+
+    🐳🫸j⏫0🫷
+        aux 🟰 myArray🔎j
+        🤔🫸aux🔼key🫷
+            aux 🟰 j ➕ 1
+            aux2 🟰 myArray 🔎 j
+
+            myArray 🔎 aux  🟰 aux2
+
+            j 🟰 j ➖ 1
+        😬
+
+        myArray 🔎 aux  🟰 key
+
+    🐋
+🐥
+
+
+💅🫸👉\nVetor de saida: 👈🫷
 
 🐣🫸i🔽vec_size🚭i 🟰 i ➕ 1🫷
     aux_var 🟰 myArray🔎i

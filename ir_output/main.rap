@@ -23,7 +23,7 @@ jump begin_for_0
 label end_for_1
 mov %r7 0
 mov %r8 0
-printf "\nVetor: "
+printf "\nVetor de entrada: "
 
 label begin_for_2
 
@@ -37,3 +37,60 @@ printv %r8
 printf ", "
 jump begin_for_2
 label end_for_3
+mov %r7 1
+mov %r9 0
+mov %r10 0
+mov %r11 0
+mov %r12 0
+
+label begin_for_4
+
+less %t0, %r7, %r0
+jf %t0, end_for_5
+
+add %t1, %r7, 1
+mov %r7, %t1
+load %r10, %r7(%r1)
+
+sub %t1, %r7, 1
+mov %r9, %t1
+
+label begin_while_6
+
+greatereq %t1, %r9, 0
+jf %t1, end_while_7
+load %r11, %r9(%r1)
+
+label begin_if_8
+greater %t2, %r11, %r10
+jf %t2, end_if_9
+
+add %t3, %r9, 1
+mov %r11, %t3
+load %r12, %r9(%r1)
+
+store %r12, %r11(%r1)
+
+sub %t3, %r9, 1
+mov %r9, %t3
+label end_if_9
+
+store %r10, %r11(%r1)
+jump begin_while_6
+label end_while_7
+jump begin_for_4
+label end_for_5
+printf "\nVetor de saida: "
+
+label begin_for_10
+
+less %t1, %r7, %r0
+jf %t1, end_for_11
+
+add %t2, %r7, 1
+mov %r7, %t2
+load %r8, %r7(%r1)
+printv %r8
+printf ", "
+jump begin_for_10
+label end_for_11

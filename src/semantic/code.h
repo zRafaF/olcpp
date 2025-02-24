@@ -169,6 +169,27 @@ class GenIntegerAddition : public Code {
     }
 };
 
+class GenIntegerSubtraction : public Code {
+   private:
+    condition_s condition;
+
+   public:
+    GenIntegerSubtraction(db_s* db) : Code(db) {}
+    GenIntegerSubtraction(db_s* db, std::string _output) : Code(db, _output) {};
+
+    std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
+        condition = getConditions(dataBase, element);
+
+        size_t arraySize = dataBase->temporaryArray.size();
+
+        dataBase->temporaryArray.push_back(variable_s(INT, 1, arraySize));
+
+        output = "sub %t" + std::to_string(arraySize) + ", " + getAccessString(condition.left) + ", " + getAccessString(condition.right);
+
+        return {};
+    }
+};
+
 class GenIntegerModulus : public Code {
    private:
     condition_s condition;
@@ -226,7 +247,27 @@ class GenAssign : public Code {
             ret.push_back(std::make_shared<Code>(dataBase, "mov %r" + std::to_string(target.offset) + ", %t" + std::to_string(dataBase->temporaryArray.size() - 1)));
 
             dataBase->temporaryArray.pop_back();
-        } else if (valueType == "INPUT_STATEMENT") {
+        } else if (valueType == "INTEGER_SUBTRACTION") {
+            if (target.type != INT)
+                semanticError("Tried to assign an integer subtraction to a non integer variable");
+
+            ret.push_back(std::make_shared<GenIntegerSubtraction>(dataBase));
+            ret.back()->generate(element.value().value());
+            ret.push_back(std::make_shared<Code>(dataBase, "mov %r" + std::to_string(target.offset) + ", %t" + std::to_string(dataBase->temporaryArray.size() - 1)));
+
+            dataBase->temporaryArray.pop_back();
+        } else if (valueType == "INTEGER_MODULUS") {
+            if (target.type != INT)
+                semanticError("Tried to assign an integer modulus to a non integer variable");
+
+            ret.push_back(std::make_shared<GenIntegerModulus>(dataBase));
+            ret.back()->generate(element.value().value());
+            ret.push_back(std::make_shared<Code>(dataBase, "mov %r" + std::to_string(target.offset) + ", %t" + std::to_string(dataBase->temporaryArray.size() - 1)));
+
+            dataBase->temporaryArray.pop_back();
+        }
+
+        else if (valueType == "INPUT_STATEMENT") {
             output = "read %r" + std::to_string(target.offset);
         } else if (valueType == "ACCESS_ARRAY") {
             std::string arrayName = element.value().value().value().instruction();
