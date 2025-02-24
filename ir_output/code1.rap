@@ -1,22 +1,21 @@
 mov %r0 1
 mov %r1 1
-mov %r1 32
-mov %r1 %r1
-mov %r1 12
-mov %r1 97
-mov %r2 98
-mov %r3 99
-mov %r4 100
-mov %r5 0
-mov %r1025 49
-mov %r1026 50
-mov %r1027 51
+mov %r2 32
+mov %r1 %r2
+mov %r3 12
+mov %r4 97
+mov %r5 98
+mov %r6 99
+mov %r7 100
+mov %r8 0
 mov %r1028 49
 mov %r1029 50
 mov %r1030 51
-mov %r1031 0
+mov %r1031 49
+mov %r1032 50
+mov %r1033 51
+mov %r1034 0
 printf "Hello World \n"
-printv %r1
 
 label begin_for_0
 less %t0, %r1, 45
@@ -24,4 +23,7 @@ jf %t0, end_for_1
 
 add %t1, %r1, 1
 mov %r1, %t1
+printv %r1
+printf "\n"
+jump begin_for_0
 label end_for_1

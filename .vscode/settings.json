@@ -50,7 +50,11 @@
     "xmemory": "cpp",
     "xstddef": "cpp",
     "xtree": "cpp",
-    "variant": "cpp"
+    "variant": "cpp",
+    "algorithm": "cpp",
+    "iomanip": "cpp",
+    "xlocmon": "cpp",
+    "xloctime": "cpp"
   },
   "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google,  ColumnLimit: 0, IndentWidth: 4, TabWidth: 4}",
   "cSpell.words": [

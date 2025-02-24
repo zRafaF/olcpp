@@ -90,10 +90,12 @@ class GenVariableDeclaration : public Code {
         const std::string valueType = element.value().value().value().instruction();
         const std::string value = element.value().value().value().value().instruction();
 
-        // Calculate offset
-        unsigned offset = 0;
-        for (const auto& pair : dataBase->variablesMap) {
-            offset = pair.second.offset + pair.second.size;
+        size_t offset = 0;
+
+        for (auto ma : dataBase->variablesMap) {
+            if (ma.second.offset >= offset) {
+                offset = ma.second.offset + ma.second.size;
+            }
         }
 
         const variable_s newVar(type, getVariableTypeSize(type), offset);
@@ -294,6 +296,10 @@ class GenForLoop : public Code {
         appendVectors(instructions, parseNodeInstructions(assignmentNode.value(), dataBase));
 
         // Parse the for loop
+        appendVectors(instructions, parseNodeInstructions(assignmentNode.next(), dataBase));
+
+        // Loop back
+        instructions.push_back(std::make_shared<Code>(dataBase, "jump " + startLabelStr));
 
         // End label
         instructions.push_back(std::make_shared<Code>(dataBase, "label " + endLabelStr));
