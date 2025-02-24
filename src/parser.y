@@ -312,7 +312,7 @@ print:
 // If statement control flow, the if content is on the "value" parameter, if the execution flow do not enter it it goes right to "next"
 if:
     IF_START condition e_o_l statement_list optional_end_of_lines IF_END{
-        $$ = createNode("IF_CONDITION", createNode("IF", createNode("CONDITION", $2, $4), NULL), NULL);
+        $$ = createNode("IF", createNode("CONDITION", $2, $4), NULL);
     }
     | IF_START condition e_o_l statement_list optional_end_of_lines IF_END else{
         $$ = createNode("IF_ELSE_CONDITION", createNode("IF", createNode("CONDITION", $2, $4), $7), NULL);

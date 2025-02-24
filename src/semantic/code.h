@@ -489,3 +489,39 @@ class GenIfElseCondition : public Code {
         return instructions;
     }
 };
+
+class GenIf : public Code {
+   public:
+    GenIf(db_s* db) : Code(db) {}
+    GenIf(db_s* db, std::string _output) : Code(db, _output) {};
+
+    std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
+        std::vector<std::shared_ptr<Code>> instructions;
+
+        std::string startLabelStr = "begin_if_" + std::to_string(dataBase->labelCounter);
+        dataBase->labelCounter++;
+        std::string endLabelStr = "end_if_" + std::to_string(dataBase->labelCounter);
+        dataBase->labelCounter++;
+
+        // Begin label
+        instructions.push_back(std::make_shared<Code>(dataBase, "label " + startLabelStr));
+
+        // condition
+        IRNode condition = element.value().value();
+        appendVectors(instructions, parseNodeInstructions(condition, dataBase));
+
+        // Jump to end if condition is not met
+        instructions.push_back(std::make_shared<Code>(dataBase, "jf %t" + std::to_string(dataBase->temporaryArray.size() - 1) + ", " + endLabelStr));
+
+        // Parse the if block
+
+        IRNode ifBlock = element.value().next();
+
+        appendVectors(instructions, parseNodeInstructions(ifBlock, dataBase));
+
+        // End label
+        instructions.push_back(std::make_shared<Code>(dataBase, "label " + endLabelStr));
+
+        return instructions;
+    }
+};
