@@ -74,6 +74,9 @@ class Code {
     Code(db_s* db) : dataBase(db) {
         assert(dataBase);
     }
+    Code(db_s* db, std::string _output) : dataBase(db), output(_output) {
+        assert(dataBase);
+    }
 
     virtual std::vector<std::shared_ptr<Code>> generate(IRNode element) {
         assert(element);
@@ -90,6 +93,7 @@ class Code {
 class GenVariableDeclaration : public Code {
    public:
     GenVariableDeclaration(db_s* db) : Code(db) {}
+    GenVariableDeclaration(db_s* db, std::string _output) : Code(db, _output) {};
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
         const std::string name = element.value().instruction();
@@ -123,11 +127,64 @@ class GenVariableDeclaration : public Code {
     }
 };
 
+class GenIntegerAddition : public Code {
+   private:
+    std::variant<variable_s, int> left;
+    std::variant<variable_s, int> right;
+
+    std::string getAccessString(std::variant<variable_s, int> val) {
+        if (std::holds_alternative<variable_s>(val)) {
+            return "%r" + std::to_string(std::get<variable_s>(val).offset);
+        } else {
+            return std::to_string(std::get<int>(val));
+        }
+    }
+
+   public:
+    GenIntegerAddition(db_s* db) : Code(db) {}
+    GenIntegerAddition(db_s* db, std::string _output) : Code(db, _output) {};
+
+    std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
+        if (element.value().instruction() == "VARIABLE") {
+            checkVariableExists(element.value().value().instruction());
+            left = dataBase->variablesMap.at(element.value().value().instruction());
+            std::cout << "LEFT: " << dataBase->variablesMap.at(element.value().value().instruction()) << std::endl;
+
+        } else if (element.value().instruction() == "CONSTANT") {
+            left = std::stoi(element.value().value().instruction());
+        } else {
+            semanticError("Invalid left operand");
+        }
+
+        IRNode rightNode = element.next();
+
+        if (rightNode.instruction() == "VARIABLE") {
+            checkVariableExists(rightNode.value().instruction());
+            right = dataBase->variablesMap.at(rightNode.value().instruction());
+        } else if (rightNode.instruction() == "CONSTANT") {
+            right = std::stoi(rightNode.value().instruction());
+        } else {
+            semanticError("Invalid right operand");
+        }
+
+        size_t arraySize = dataBase->temporaryArray.size();
+
+        dataBase->temporaryArray.push_back(variable_s(INT, 1, arraySize));
+
+        output = "add %t" + std::to_string(arraySize) + ", " + getAccessString(left) + ", " + getAccessString(right);
+
+        return {};
+    }
+};
+
 class GenAssign : public Code {
    public:
     GenAssign(db_s* db) : Code(db) {}
+    GenAssign(db_s* db, std::string _output) : Code(db, _output) {};
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
+        std::vector<std::shared_ptr<Code>> ret;
+
         const std::string varName = element.value().instruction();
         checkVariableExists(varName);
 
@@ -145,17 +202,30 @@ class GenAssign : public Code {
                 semanticError("Type mismatch");
             }
             output = generateVariableAssignment(target, source);
-        } else {
-            semanticError("Invalid value type");
+        } else if (valueType == "INTEGER_ADDITION") {
+            if (target.type != INT)
+                semanticError("Tried to assign an integer addition to a non integer variable");
+
+            ret.push_back(std::make_shared<GenIntegerAddition>(dataBase));
+            ret.back()->generate(element.value().value());
+            ret.push_back(std::make_shared<Code>(dataBase, "mov %r" + std::to_string(target.offset) + ", %t" + std::to_string(dataBase->temporaryArray.size() - 1)));
+
+            dataBase->temporaryArray.pop_back();
+
         }
 
-        return {};
+        else {
+            semanticError("Invalid variable assignment value type");
+        }
+
+        return ret;
     }
 };
 
 class GenPrintStatement : public Code {
    public:
     GenPrintStatement(db_s* db) : Code(db) {}
+    GenPrintStatement(db_s* db, std::string _output) : Code(db, _output) {};
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
         std::string valueType = element.value().instruction();
@@ -207,6 +277,7 @@ class GenLessThan : public Code {
 
    public:
     GenLessThan(db_s* db) : Code(db) {}
+    GenLessThan(db_s* db, std::string _output) : Code(db, _output) {};
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
         if (element.value().instruction() == "VARIABLE") {
@@ -219,9 +290,6 @@ class GenLessThan : public Code {
         }
 
         IRNode rightNode = element.next();
-
-        std::cout << "LEFT: " << element.value().instruction() << std::endl;
-        std::cout << "RIGHT: " << rightNode.instruction() << std::endl;
 
         if (rightNode.instruction() == "VARIABLE") {
             checkVariableExists(rightNode.value().instruction());
@@ -247,30 +315,43 @@ std::vector<std::shared_ptr<Code>> parseNodeInstructions(IRNode node, db_s* db);
 class GenForLoop : public Code {
    public:
     GenForLoop(db_s* db) : Code(db) {}
+    GenForLoop(db_s* db, std::string _output) : Code(db, _output) {};
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
         std::vector<std::shared_ptr<Code>> instructions;
 
-        if (element.value().instruction() != "FOR") {
+        if (element.value().instruction() != "FOR")
             semanticError("Invalid for loop");
-        }
 
-        std::shared_ptr<Code> startLabel = std::make_shared<Code>(dataBase);
-        startLabel->setOutput("label begin_for_" + std::to_string(dataBase->labelCounter));
+        std::string startLabelStr = "begin_for_" + std::to_string(dataBase->labelCounter);
         dataBase->labelCounter++;
-        instructions.push_back(startLabel);
+        std::string endLabelStr = "end_for_" + std::to_string(dataBase->labelCounter);
+        dataBase->labelCounter++;
+
+        // Begin label
+        instructions.push_back(std::make_shared<Code>(dataBase, "label " + startLabelStr));
 
         // condition
         IRNode condition = element.value().value();
-        std::vector<std::shared_ptr<Code>> conditionInstructions = parseNodeInstructions(condition, dataBase);
-        appendVectors(instructions, conditionInstructions);
+        appendVectors(instructions, parseNodeInstructions(condition, dataBase));
+
+        // Jump out if condition is no longer met
+        instructions.push_back(std::make_shared<Code>(dataBase, "jf %t" + std::to_string(dataBase->temporaryArray.size() - 1) + ", " + endLabelStr));
+
+        // For assignment
+        IRNode assignmentNode = element.value().next();
+
+        if (assignmentNode.instruction() != "FOR_ASSIGN")
+            semanticError("Invalid for assignment");
+
+        appendVectors(instructions, parseNodeInstructions(assignmentNode.value(), dataBase));
 
         // Parse the for loop
 
-        std::shared_ptr<Code> endLabel = std::make_shared<Code>(dataBase);
-        endLabel->setOutput("label end_for_" + std::to_string(dataBase->labelCounter));
-        dataBase->labelCounter++;
-        instructions.push_back(endLabel);
+        // End label
+        instructions.push_back(std::make_shared<Code>(dataBase, "label " + endLabelStr));
+
+        dataBase->temporaryArray.pop_back();
 
         return instructions;
     }
