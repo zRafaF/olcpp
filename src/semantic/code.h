@@ -87,6 +87,8 @@ class GenVariableDeclaration : public Code {
     GenVariableDeclaration(db_s* db, std::string _output) : Code(db, _output) {};
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
+        std::vector<std::shared_ptr<Code>> instructions;
+
         const std::string name = element.value().instruction();
         const variable_type_e type = parseVariableType(element.value().value().instruction());
         const std::string valueType = element.value().value().value().instruction();
@@ -100,12 +102,11 @@ class GenVariableDeclaration : public Code {
             }
         }
 
-        const variable_s newVar(type, getVariableTypeSize(type), offset);
+        variable_s newVar(type, getVariableTypeSize(type), offset);
 
         if (dataBase->variablesMap.count(name)) {
             semanticError("Duplicate variable [" + name + "]");
         }
-        dataBase->variablesMap.emplace(name, newVar);
 
         if (valueType == "CONSTANT") {
             checkValueType(type, value);
@@ -113,12 +114,37 @@ class GenVariableDeclaration : public Code {
         } else if (valueType == "VARIABLE") {
             checkVariableExists(value, dataBase);
             output = generateVariableAssignment(newVar, dataBase->variablesMap.at(value));
-        } else if (valueType == "INT_ARRAY_TYPE") {
+        } else if (valueType == "ARRAY") {
             // TODO IMPLEMENT
+            std::vector<int> values;
+
+            IRNode arrayValue = element.value().value().value().value();
+            while (arrayValue) {
+                std::string valueType = arrayValue.instruction();
+                std::string value = arrayValue.value().instruction();
+
+                if (valueType == "CONSTANT") {
+                    checkValueType(type, value);
+                    values.push_back(std::stoi(value));
+                } else {
+                    semanticError("Invalid value type: " + valueType + " the array must be declared with constants");
+                }
+
+                arrayValue = arrayValue.next();
+            }
+
+            newVar.size = values.size();
+
+            for (unsigned i = 0; i < values.size(); i++) {
+                instructions.push_back(std::make_shared<Code>(dataBase, "mov %r" + std::to_string(newVar.offset + i) + " " + std::to_string(values[i])));
+            }
         } else {
-            semanticError("Invalid value type");
+            semanticError("Invalid value type: " + valueType);
         }
-        return {};
+
+        dataBase->variablesMap.emplace(name, newVar);
+
+        return instructions;
     }
 };
 
@@ -205,7 +231,7 @@ class GenAssign : public Code {
         }
 
         else {
-            semanticError("Invalid variable assignment value type");
+            semanticError("Invalid variable assignment value type " + valueType);
         }
 
         return ret;

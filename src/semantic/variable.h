@@ -4,7 +4,8 @@
 enum variable_type_e {
     INT,
     STRING,
-    BOOL
+    BOOL,
+    INT_ARRAY
 };
 
 struct variable_s {
@@ -29,6 +30,8 @@ variable_type_e parseVariableType(const std::string type) {
         return STRING;
     } else if (type == "BOOL_TYPE") {
         return BOOL;
+    } else if (type == "INT_ARRAY_TYPE") {
+        return INT_ARRAY;
     }
     return INT;
 }
