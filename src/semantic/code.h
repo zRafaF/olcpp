@@ -92,10 +92,10 @@ class GenVariableDeclaration : public Code {
     GenVariableDeclaration(db_s* db) : Code(db) {}
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
-        const std::string name = element.instruction();
-        const variable_type_e type = parseVariableType(element.value().instruction());
-        const std::string valueType = element.value().value().instruction();
-        const std::string value = element.value().value().value().instruction();
+        const std::string name = element.value().instruction();
+        const variable_type_e type = parseVariableType(element.value().value().instruction());
+        const std::string valueType = element.value().value().value().instruction();
+        const std::string value = element.value().value().value().value().instruction();
 
         // Calculate offset
         unsigned offset = 0;
@@ -128,11 +128,11 @@ class GenAssign : public Code {
     GenAssign(db_s* db) : Code(db) {}
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
-        const std::string varName = element.instruction();
+        const std::string varName = element.value().instruction();
         checkVariableExists(varName);
 
-        const std::string valueType = element.value().instruction();
-        const std::string value = element.value().value().instruction();
+        const std::string valueType = element.value().value().instruction();
+        const std::string value = element.value().value().value().instruction();
         variable_s target = dataBase->variablesMap.at(varName);
 
         if (valueType == "CONSTANT") {
@@ -158,8 +158,8 @@ class GenPrintStatement : public Code {
     GenPrintStatement(db_s* db) : Code(db) {}
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
-        std::string valueType = element.instruction();
-        std::string value = element.value().instruction();
+        std::string valueType = element.value().instruction();
+        std::string value = element.value().value().instruction();
 
         replaceNewlines(value);
 
@@ -209,16 +209,20 @@ class GenLessThan : public Code {
     GenLessThan(db_s* db) : Code(db) {}
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
-        if (element.instruction() == "VARIABLE") {
-            checkVariableExists(element.value().instruction());
-            left = dataBase->variablesMap.at(element.value().instruction());
-        } else if (element.instruction() == "CONSTANT") {
-            left = std::stoi(element.value().instruction());
+        if (element.value().instruction() == "VARIABLE") {
+            checkVariableExists(element.value().value().instruction());
+            left = dataBase->variablesMap.at(element.value().value().instruction());
+        } else if (element.value().instruction() == "CONSTANT") {
+            left = std::stoi(element.value().value().instruction());
         } else {
             semanticError("Invalid left operand");
         }
 
         IRNode rightNode = element.next();
+
+        std::cout << "LEFT: " << element.value().instruction() << std::endl;
+        std::cout << "RIGHT: " << rightNode.instruction() << std::endl;
+
         if (rightNode.instruction() == "VARIABLE") {
             checkVariableExists(rightNode.value().instruction());
             right = dataBase->variablesMap.at(rightNode.value().instruction());
@@ -247,7 +251,7 @@ class GenForLoop : public Code {
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
         std::vector<std::shared_ptr<Code>> instructions;
 
-        if (element.instruction() != "FOR") {
+        if (element.value().instruction() != "FOR") {
             semanticError("Invalid for loop");
         }
 
@@ -257,7 +261,7 @@ class GenForLoop : public Code {
         instructions.push_back(startLabel);
 
         // condition
-        IRNode condition = element.value();
+        IRNode condition = element.value().value();
         std::vector<std::shared_ptr<Code>> conditionInstructions = parseNodeInstructions(condition, dataBase);
         appendVectors(instructions, conditionInstructions);
 

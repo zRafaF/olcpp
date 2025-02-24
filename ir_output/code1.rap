@@ -19,4 +19,5 @@ printf "Hello World \n"
 printv %r1
 
 label begin_for_0
+less %t0, %r1, 45
 label end_for_1

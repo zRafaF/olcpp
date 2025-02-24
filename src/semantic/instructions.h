@@ -17,7 +17,6 @@ std::vector<std::shared_ptr<Code>> parseNodeInstructions(IRNode node, db_s* db) 
     while (node) {
         const std::string instruction = node.instruction();
         std::cout << "Parsing Instruction: " << instruction << std::endl;
-        IRNode valueNode = node.value();
         std::shared_ptr<Code> code;
         if (instruction == "VARIABLE_DECLARATION") {
             code = std::make_shared<GenVariableDeclaration>(db);
@@ -37,7 +36,7 @@ std::vector<std::shared_ptr<Code>> parseNodeInstructions(IRNode node, db_s* db) 
         }
 
         if (code) {
-            std::vector<std::shared_ptr<Code>> generatedInstructions = code->generate(valueNode);
+            std::vector<std::shared_ptr<Code>> generatedInstructions = code->generate(node);
 
             appendVectors(instructions, generatedInstructions);
         }
