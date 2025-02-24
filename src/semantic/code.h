@@ -16,6 +16,9 @@
 #include "ir_node.h"
 #include "variable.h"
 
+class Code;
+std::vector<std::shared_ptr<Code>> parseNodeInstructions(IRNode node, db_s* db);
+
 class Code {
    protected:
     db_s* dataBase;
@@ -235,14 +238,6 @@ class GenLessThan : public Code {
    private:
     condition_s condition;
 
-    std::string getAccessString(std::variant<variable_s, int> val) {
-        if (std::holds_alternative<variable_s>(val)) {
-            return "%r" + std::to_string(std::get<variable_s>(val).offset);
-        } else {
-            return std::to_string(std::get<int>(val));
-        }
-    }
-
    public:
     GenLessThan(db_s* db) : Code(db) {}
     GenLessThan(db_s* db, std::string _output) : Code(db, _output) {};
@@ -259,7 +254,105 @@ class GenLessThan : public Code {
     }
 };
 
-std::vector<std::shared_ptr<Code>> parseNodeInstructions(IRNode node, db_s* db);
+class GenLessThanEqual : public Code {
+   private:
+    condition_s condition;
+
+   public:
+    GenLessThanEqual(db_s* db) : Code(db) {}
+    GenLessThanEqual(db_s* db, std::string _output) : Code(db, _output) {};
+
+    std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
+        condition = getConditions(dataBase, element);
+
+        size_t arraySize = dataBase->temporaryArray.size();
+        dataBase->temporaryArray.push_back(variable_s(BOOL, 1, arraySize));
+
+        output = "lesseq %t" + std::to_string(arraySize) + ", " + getAccessString(condition.left) + ", " + getAccessString(condition.right);
+
+        return {};
+    }
+};
+
+class GenEqual : public Code {
+   private:
+    condition_s condition;
+
+   public:
+    GenEqual(db_s* db) : Code(db) {}
+    GenEqual(db_s* db, std::string _output) : Code(db, _output) {};
+
+    std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
+        condition = getConditions(dataBase, element);
+
+        size_t arraySize = dataBase->temporaryArray.size();
+        dataBase->temporaryArray.push_back(variable_s(BOOL, 1, arraySize));
+
+        output = "equal %t" + std::to_string(arraySize) + ", " + getAccessString(condition.left) + ", " + getAccessString(condition.right);
+
+        return {};
+    }
+};
+
+class GenNotEqual : public Code {
+   private:
+    condition_s condition;
+
+   public:
+    GenNotEqual(db_s* db) : Code(db) {}
+    GenNotEqual(db_s* db, std::string _output) : Code(db, _output) {};
+
+    std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
+        condition = getConditions(dataBase, element);
+
+        size_t arraySize = dataBase->temporaryArray.size();
+        dataBase->temporaryArray.push_back(variable_s(BOOL, 1, arraySize));
+
+        output = "diff %t" + std::to_string(arraySize) + ", " + getAccessString(condition.left) + ", " + getAccessString(condition.right);
+
+        return {};
+    }
+};
+
+class GenGreaterThan : public Code {
+   private:
+    condition_s condition;
+
+   public:
+    GenGreaterThan(db_s* db) : Code(db) {}
+    GenGreaterThan(db_s* db, std::string _output) : Code(db, _output) {};
+
+    std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
+        condition = getConditions(dataBase, element);
+
+        size_t arraySize = dataBase->temporaryArray.size();
+        dataBase->temporaryArray.push_back(variable_s(BOOL, 1, arraySize));
+
+        output = "greater %t" + std::to_string(arraySize) + ", " + getAccessString(condition.left) + ", " + getAccessString(condition.right);
+
+        return {};
+    }
+};
+
+class GenGreaterThanEqual : public Code {
+   private:
+    condition_s condition;
+
+   public:
+    GenGreaterThanEqual(db_s* db) : Code(db) {}
+    GenGreaterThanEqual(db_s* db, std::string _output) : Code(db, _output) {};
+
+    std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
+        condition = getConditions(dataBase, element);
+
+        size_t arraySize = dataBase->temporaryArray.size();
+        dataBase->temporaryArray.push_back(variable_s(BOOL, 1, arraySize));
+
+        output = "greatereq %t" + std::to_string(arraySize) + ", " + getAccessString(condition.left) + ", " + getAccessString(condition.right);
+
+        return {};
+    }
+};
 
 class GenForLoop : public Code {
    public:
@@ -304,8 +397,12 @@ class GenForLoop : public Code {
         // End label
         instructions.push_back(std::make_shared<Code>(dataBase, "label " + endLabelStr));
 
+        // Clearing the stack
         dataBase->temporaryArray.pop_back();
 
         return instructions;
     }
+};
+
+class GenIfElseCondition : public Code {
 };

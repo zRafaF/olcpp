@@ -20,22 +20,29 @@ std::vector<std::shared_ptr<Code>> parseNodeInstructions(IRNode node, db_s* db) 
         std::shared_ptr<Code> code;
         if (instruction == "VARIABLE_DECLARATION") {
             code = std::make_shared<GenVariableDeclaration>(db);
-            instructions.push_back(code);
         } else if (instruction == "ASSIGN") {
             code = std::make_shared<GenAssign>(db);
-            instructions.push_back(code);
         } else if (instruction == "PRINT_STATEMENT") {
             code = std::make_shared<GenPrintStatement>(db);
-            instructions.push_back(code);
         } else if (instruction == "FOR_LOOP") {
             code = std::make_shared<GenForLoop>(db);
-            instructions.push_back(code);
         } else if (instruction == "LESS_THAN") {
             code = std::make_shared<GenLessThan>(db);
-            instructions.push_back(code);
+        } else if (instruction == "LESS_THAN_EQUAL") {
+            code = std::make_shared<GenLessThanEqual>(db);
+        } else if (instruction == "EQUAL") {
+            code = std::make_shared<GenEqual>(db);
+        } else if (instruction == "NOT_EQUAL") {
+            code = std::make_shared<GenNotEqual>(db);
+        } else if (instruction == "GREATER_THAN") {
+            code = std::make_shared<GenGreaterThan>(db);
+        } else if (instruction == "GREATER_THAN_EQUAL") {
+            code = std::make_shared<GenGreaterThanEqual>(db);
         }
 
         if (code) {
+            instructions.push_back(code);
+
             std::vector<std::shared_ptr<Code>> generatedInstructions = code->generate(node);
 
             appendVectors(instructions, generatedInstructions);

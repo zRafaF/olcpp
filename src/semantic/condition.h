@@ -37,3 +37,11 @@ condition_s getConditions(db_s* dataBase, IRNode element) {
 
     return returnCondition;
 }
+
+std::string getAccessString(std::variant<variable_s, int> val) {
+    if (std::holds_alternative<variable_s>(val)) {
+        return "%r" + std::to_string(std::get<variable_s>(val).offset);
+    } else {
+        return std::to_string(std::get<int>(val));
+    }
+}

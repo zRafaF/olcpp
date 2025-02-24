@@ -60,6 +60,8 @@
   "cSpell.words": [
     "fclose",
     "fprintf",
+    "greatereq",
+    "lesseq",
     "noinput",
     "nounput",
     "perror",

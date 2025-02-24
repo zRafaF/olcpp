@@ -18,7 +18,7 @@ mov %r1034 0
 printf "Hello World \n"
 
 label begin_for_0
-less %t0, %r1, 45
+diff %t0, %r1, 45
 jf %t0, end_for_1
 
 add %t1, %r1, 1
