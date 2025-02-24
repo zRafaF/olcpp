@@ -161,10 +161,10 @@ integer_expression:
             NULL); 
     }
     | expr { $$ = $1; } // Pass through an evaluated expression
-    | IDENTIFIER ACCESS_ARRAY INTEGER { 
+    | IDENTIFIER ACCESS_ARRAY integer_expression { 
         $$ = createNode(
             "ACCESS_ARRAY", 
-            createNode($1, createNode($3, NULL, NULL), NULL), 
+            createNode($1, $3, NULL), 
             NULL);
     }
     ;
