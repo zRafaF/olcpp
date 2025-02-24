@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "checkers.h"
+#include "condition.h"
 #include "db.h"
 #include "helpers.h"
 #include "ir_node.h"
@@ -22,18 +23,6 @@ class Code {
     std::vector<std::shared_ptr<Code>>
         children;
     std::string output;
-
-    void checkVariableExists(const std::string& name) {
-        if (dataBase->variablesMap.find(name) == dataBase->variablesMap.end()) {
-            semanticError("Undefined variable [" + name + "]");
-        }
-    }
-
-    void checkValueType(variable_type_e type, const std::string& value) {
-        if (!isVariableTypeValid(type, value)) {
-            semanticError("Invalid value for variable type");
-        }
-    }
 
     std::string generateConstantAssignment(variable_s variable, const std::string& value) {
         std::string out;
@@ -118,7 +107,7 @@ class GenVariableDeclaration : public Code {
             checkValueType(type, value);
             output = generateConstantAssignment(newVar, value);
         } else if (valueType == "VARIABLE") {
-            checkVariableExists(value);
+            checkVariableExists(value, dataBase);
             output = generateVariableAssignment(newVar, dataBase->variablesMap.at(value));
         } else {
             semanticError("Invalid value type");
@@ -129,8 +118,7 @@ class GenVariableDeclaration : public Code {
 
 class GenIntegerAddition : public Code {
    private:
-    std::variant<variable_s, int> left;
-    std::variant<variable_s, int> right;
+    condition_s condition;
 
     std::string getAccessString(std::variant<variable_s, int> val) {
         if (std::holds_alternative<variable_s>(val)) {
@@ -145,33 +133,13 @@ class GenIntegerAddition : public Code {
     GenIntegerAddition(db_s* db, std::string _output) : Code(db, _output) {};
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
-        if (element.value().instruction() == "VARIABLE") {
-            checkVariableExists(element.value().value().instruction());
-            left = dataBase->variablesMap.at(element.value().value().instruction());
-            std::cout << "LEFT: " << dataBase->variablesMap.at(element.value().value().instruction()) << std::endl;
-
-        } else if (element.value().instruction() == "CONSTANT") {
-            left = std::stoi(element.value().value().instruction());
-        } else {
-            semanticError("Invalid left operand");
-        }
-
-        IRNode rightNode = element.next();
-
-        if (rightNode.instruction() == "VARIABLE") {
-            checkVariableExists(rightNode.value().instruction());
-            right = dataBase->variablesMap.at(rightNode.value().instruction());
-        } else if (rightNode.instruction() == "CONSTANT") {
-            right = std::stoi(rightNode.value().instruction());
-        } else {
-            semanticError("Invalid right operand");
-        }
+        condition = getConditions(dataBase, element);
 
         size_t arraySize = dataBase->temporaryArray.size();
 
         dataBase->temporaryArray.push_back(variable_s(INT, 1, arraySize));
 
-        output = "add %t" + std::to_string(arraySize) + ", " + getAccessString(left) + ", " + getAccessString(right);
+        output = "add %t" + std::to_string(arraySize) + ", " + getAccessString(condition.left) + ", " + getAccessString(condition.right);
 
         return {};
     }
@@ -186,7 +154,7 @@ class GenAssign : public Code {
         std::vector<std::shared_ptr<Code>> ret;
 
         const std::string varName = element.value().instruction();
-        checkVariableExists(varName);
+        checkVariableExists(varName, dataBase);
 
         const std::string valueType = element.value().value().instruction();
         const std::string value = element.value().value().value().instruction();
@@ -196,7 +164,7 @@ class GenAssign : public Code {
             checkValueType(target.type, value);
             output = generateConstantAssignment(target, value);
         } else if (valueType == "VARIABLE") {
-            checkVariableExists(value);
+            checkVariableExists(value, dataBase);
             const variable_s source = dataBase->variablesMap.at(value);
             if (target.type != source.type) {
                 semanticError("Type mismatch");
@@ -211,7 +179,6 @@ class GenAssign : public Code {
             ret.push_back(std::make_shared<Code>(dataBase, "mov %r" + std::to_string(target.offset) + ", %t" + std::to_string(dataBase->temporaryArray.size() - 1)));
 
             dataBase->temporaryArray.pop_back();
-
         }
 
         else {
@@ -236,7 +203,7 @@ class GenPrintStatement : public Code {
         if (valueType == "CONSTANT") {
             output = "printf \"" + value + "\"";
         } else if (valueType == "VARIABLE") {
-            checkVariableExists(value);
+            checkVariableExists(value, dataBase);
             const variable_s source = dataBase->variablesMap.at(value);
             if (source.type == INT) {
                 output = "printv %r" + std::to_string(source.offset);
@@ -264,8 +231,7 @@ class GenPrintStatement : public Code {
 
 class GenLessThan : public Code {
    private:
-    std::variant<variable_s, int> left;
-    std::variant<variable_s, int> right;
+    condition_s condition;
 
     std::string getAccessString(std::variant<variable_s, int> val) {
         if (std::holds_alternative<variable_s>(val)) {
@@ -280,31 +246,12 @@ class GenLessThan : public Code {
     GenLessThan(db_s* db, std::string _output) : Code(db, _output) {};
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
-        if (element.value().instruction() == "VARIABLE") {
-            checkVariableExists(element.value().value().instruction());
-            left = dataBase->variablesMap.at(element.value().value().instruction());
-        } else if (element.value().instruction() == "CONSTANT") {
-            left = std::stoi(element.value().value().instruction());
-        } else {
-            semanticError("Invalid left operand");
-        }
-
-        IRNode rightNode = element.next();
-
-        if (rightNode.instruction() == "VARIABLE") {
-            checkVariableExists(rightNode.value().instruction());
-            right = dataBase->variablesMap.at(rightNode.value().instruction());
-        } else if (rightNode.instruction() == "CONSTANT") {
-            right = std::stoi(rightNode.value().instruction());
-        } else {
-            semanticError("Invalid right operand");
-        }
+        condition = getConditions(dataBase, element);
 
         size_t arraySize = dataBase->temporaryArray.size();
-
         dataBase->temporaryArray.push_back(variable_s(BOOL, 1, arraySize));
 
-        output = "less %t" + std::to_string(arraySize) + ", " + getAccessString(left) + ", " + getAccessString(right);
+        output = "less %t" + std::to_string(arraySize) + ", " + getAccessString(condition.left) + ", " + getAccessString(condition.right);
 
         return {};
     }

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 
+#include "db.h"
 #include "variable.h"
 
 void semanticError(const std::string& errorMessage) {
@@ -25,4 +26,16 @@ bool isVariableTypeValid(variable_type_e type, std::string value) {
         }
     }
     return true;
+}
+
+void checkVariableExists(const std::string& name, db_s* dataBase) {
+    if (dataBase->variablesMap.find(name) == dataBase->variablesMap.end()) {
+        semanticError("Undefined variable [" + name + "]");
+    }
+}
+
+void checkValueType(variable_type_e type, const std::string& value) {
+    if (!isVariableTypeValid(type, value)) {
+        semanticError("Invalid value for variable type");
+    }
 }
