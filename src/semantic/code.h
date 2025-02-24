@@ -104,9 +104,12 @@ class GenVariableDeclaration : public Code {
 
         variable_s newVar(type, getVariableTypeSize(type), offset);
 
+        std::cout << "VAR: " << newVar << std::endl;
+
         if (dataBase->variablesMap.count(name)) {
             semanticError("Duplicate variable [" + name + "]");
         }
+        dataBase->variablesMap.emplace(name, newVar);
 
         if (valueType == "CONSTANT") {
             checkValueType(type, value);
@@ -115,7 +118,6 @@ class GenVariableDeclaration : public Code {
             checkVariableExists(value, dataBase);
             output = generateVariableAssignment(newVar, dataBase->variablesMap.at(value));
         } else if (valueType == "ARRAY") {
-            // TODO IMPLEMENT
             std::vector<int> values;
 
             IRNode arrayValue = element.value().value().value().value();
@@ -141,8 +143,6 @@ class GenVariableDeclaration : public Code {
         } else {
             semanticError("Invalid value type: " + valueType);
         }
-
-        dataBase->variablesMap.emplace(name, newVar);
 
         return instructions;
     }
@@ -245,6 +245,43 @@ class GenAssign : public Code {
         }
 
         return ret;
+    }
+};
+
+class GenAssignArray : public Code {
+   public:
+    GenAssignArray(db_s* db) : Code(db) {}
+    GenAssignArray(db_s* db, std::string _output) : Code(db, _output) {};
+    std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
+        std::vector<std::shared_ptr<Code>> instructions;
+        std::string arrayName = element.value().instruction();
+        std::string index;
+
+        if (element.value().value().instruction() == "VARIABLE") {
+            checkVariableExists(element.value().value().value().instruction(), dataBase);
+            index = "%r" + std::to_string(dataBase->variablesMap.at(element.value().value().value().instruction()).offset);
+        } else {
+            index = element.value().value().value().instruction();
+        }
+
+        std::string valueType = element.value().next().instruction();
+        std::string value = element.value().next().value().instruction();
+
+        if (valueType == "CONSTANT") {
+            checkValueType(INT, value);
+            instructions.push_back(std::make_shared<Code>(dataBase, "store " + value + ", " + index + "(%r" + std::to_string(dataBase->variablesMap.at(arrayName).offset) + ")"));
+        } else if (valueType == "VARIABLE") {
+            checkVariableExists(value, dataBase);
+            variable_s source = dataBase->variablesMap.at(value);
+            if (source.type != INT) {
+                semanticError("Tried to assign a non integer variable to an array");
+            }
+            instructions.push_back(std::make_shared<Code>(dataBase, "store %r" + std::to_string(source.offset) + ", " + index + "(%r" + std::to_string(dataBase->variablesMap.at(arrayName).offset) + ")"));
+        } else {
+            semanticError("Invalid value type");
+        }
+
+        return instructions;
     }
 };
 

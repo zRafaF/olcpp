@@ -1,37 +1,39 @@
 mov %r0 5
 
-mov %r1 0
+mov %r1 1
+mov %r2 2
+mov %r3 3
+mov %r4 4
+mov %r5 5
 mov %r2 0
 mov %r3 0
-mov %r4 0
-mov %r5 0
-mov %r6 0
-mov %r7 0
 printf "Insira os números do vetor:\n"
 
 label begin_for_0
 
-less %t0, %r7, %r0
+less %t0, %r3, %r0
 jf %t0, end_for_1
 
-add %t1, %r7, 1
-mov %r7, %t1
-read %r6
+add %t1, %r3, 1
+mov %r3, %t1
+read %r2
+
+store %r2, %r3(%r1)
 jump begin_for_0
 label end_for_1
-mov %r7 0
-mov %r8 0
+mov %r3 0
+mov %r4 0
 printf "\nVetor: "
 
 label begin_for_2
 
-less %t0, %r7, %r0
+less %t0, %r3, %r0
 jf %t0, end_for_3
 
-add %t1, %r7, 1
-mov %r7, %t1
-load %r8, 0(%r1)
-printv %r8
+add %t1, %r3, 1
+mov %r3, %t1
+mov %r4 2
+printv %r4
 printf ", "
 jump begin_for_2
 label end_for_3

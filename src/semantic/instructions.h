@@ -22,6 +22,8 @@ std::vector<std::shared_ptr<Code>> parseNodeInstructions(IRNode node, db_s* db) 
             code = std::make_shared<GenVariableDeclaration>(db);
         } else if (instruction == "ASSIGN") {
             code = std::make_shared<GenAssign>(db);
+        } else if (instruction == "ASSIGN_ARRAY") {
+            code = std::make_shared<GenAssignArray>(db);
         } else if (instruction == "PRINT_STATEMENT") {
             code = std::make_shared<GenPrintStatement>(db);
         }
