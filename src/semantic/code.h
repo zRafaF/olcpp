@@ -11,6 +11,7 @@
 
 #include "checkers.h"
 #include "db.h"
+#include "helpers.h"
 #include "ir_node.h"
 #include "variable.h"
 
@@ -88,8 +89,7 @@ class Code {
 
 class GenVariableDeclaration : public Code {
    public:
-    GenVariableDeclaration(db_s* db)
-        : Code(db) {}
+    GenVariableDeclaration(db_s* db) : Code(db) {}
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
         const std::string name = element.instruction();
@@ -125,8 +125,7 @@ class GenVariableDeclaration : public Code {
 
 class GenAssign : public Code {
    public:
-    GenAssign(db_s* db)
-        : Code(db) {}
+    GenAssign(db_s* db) : Code(db) {}
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
         const std::string varName = element.instruction();
@@ -156,8 +155,7 @@ class GenAssign : public Code {
 
 class GenPrintStatement : public Code {
    public:
-    GenPrintStatement(db_s* db)
-        : Code(db) {}
+    GenPrintStatement(db_s* db) : Code(db) {}
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
         std::string valueType = element.instruction();
@@ -194,23 +192,81 @@ class GenPrintStatement : public Code {
     }
 };
 
+class GenLessThan : public Code {
+   private:
+    std::variant<variable_s, int> left;
+    std::variant<variable_s, int> right;
+
+    std::string getAccessString(std::variant<variable_s, int> val) {
+        if (std::holds_alternative<variable_s>(val)) {
+            return "%r" + std::to_string(std::get<variable_s>(val).offset);
+        } else {
+            return std::to_string(std::get<int>(val));
+        }
+    }
+
+   public:
+    GenLessThan(db_s* db) : Code(db) {}
+
+    std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
+        if (element.instruction() == "VARIABLE") {
+            checkVariableExists(element.value().instruction());
+            left = dataBase->variablesMap.at(element.value().instruction());
+        } else if (element.instruction() == "CONSTANT") {
+            left = std::stoi(element.value().instruction());
+        } else {
+            semanticError("Invalid left operand");
+        }
+
+        IRNode rightNode = element.next();
+        if (rightNode.instruction() == "VARIABLE") {
+            checkVariableExists(rightNode.value().instruction());
+            right = dataBase->variablesMap.at(rightNode.value().instruction());
+        } else if (rightNode.instruction() == "CONSTANT") {
+            right = std::stoi(rightNode.value().instruction());
+        } else {
+            semanticError("Invalid right operand");
+        }
+
+        size_t arraySize = dataBase->temporaryArray.size();
+
+        dataBase->temporaryArray.push_back(variable_s(BOOL, 1, arraySize));
+
+        output = "less %t" + std::to_string(arraySize) + ", " + getAccessString(left) + ", " + getAccessString(right);
+
+        return {};
+    }
+};
+
+std::vector<std::shared_ptr<Code>> parseNodeInstructions(IRNode node, db_s* db);
+
 class GenForLoop : public Code {
    public:
-    GenForLoop(db_s* db)
-        : Code(db) {}
+    GenForLoop(db_s* db) : Code(db) {}
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
         std::vector<std::shared_ptr<Code>> instructions;
 
-        IRNode forCondition = element.value();
-
-        std::cout << forCondition.instruction() << std::endl;
-        // if (forCondition.instruction() != "FOR") {
-        //     semanticError("Invalid for loop");
-        // }
+        if (element.instruction() != "FOR") {
+            semanticError("Invalid for loop");
+        }
 
         std::shared_ptr<Code> startLabel = std::make_shared<Code>(dataBase);
-        // startLabel->se
+        startLabel->setOutput("label begin_for_" + std::to_string(dataBase->labelCounter));
+        dataBase->labelCounter++;
+        instructions.push_back(startLabel);
+
+        // condition
+        IRNode condition = element.value();
+        std::vector<std::shared_ptr<Code>> conditionInstructions = parseNodeInstructions(condition, dataBase);
+        appendVectors(instructions, conditionInstructions);
+
+        // Parse the for loop
+
+        std::shared_ptr<Code> endLabel = std::make_shared<Code>(dataBase);
+        endLabel->setOutput("label end_for_" + std::to_string(dataBase->labelCounter));
+        dataBase->labelCounter++;
+        instructions.push_back(endLabel);
 
         return instructions;
     }

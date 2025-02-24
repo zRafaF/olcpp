@@ -13,6 +13,7 @@ struct variable_s {
     unsigned int offset;  // Offset from the base pointer
 
     variable_s(variable_type_e type, unsigned int size, unsigned int offset) : type(type), size(size), offset(offset) {};
+    variable_s() : type(INT), size(1), offset(0) {};
 
     // Overload << operator for std::ostream
     friend std::ostream& operator<<(std::ostream& os, const variable_s& var) {

@@ -7,6 +7,7 @@
 
 #include "code.h"
 #include "db.h"
+#include "helpers.h"
 #include "ir_node.h"
 #include "variable.h"
 
@@ -30,12 +31,15 @@ std::vector<std::shared_ptr<Code>> parseNodeInstructions(IRNode node, db_s* db) 
         } else if (instruction == "FOR_LOOP") {
             code = std::make_shared<GenForLoop>(db);
             instructions.push_back(code);
+        } else if (instruction == "LESS_THAN") {
+            code = std::make_shared<GenLessThan>(db);
+            instructions.push_back(code);
         }
 
         if (code) {
             std::vector<std::shared_ptr<Code>> generatedInstructions = code->generate(valueNode);
 
-            instructions.insert(instructions.end(), generatedInstructions.begin(), generatedInstructions.end());
+            appendVectors(instructions, generatedInstructions);
         }
 
         node = node.next();

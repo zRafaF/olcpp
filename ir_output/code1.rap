@@ -18,3 +18,5 @@ mov %r1031 0
 printf "Hello World \n"
 printv %r1
 
+label begin_for_0
+label end_for_1
