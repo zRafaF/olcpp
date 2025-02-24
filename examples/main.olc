@@ -1,20 +1,27 @@
 👍️
 
-🪣 i 💯 🟰 1
+🪣 i 💯 🟰 0
 
 
-🐣🫸i🔽45🚭i 🟰 i ➕ 1🫷
-    💅🫸i🫷
-    💅🫸👉\n👈🫷
+🪣 biggest_num 💯 🟰 0
+🪣 do_once ⁉️ 🟰 ✅
+🪣 current_number 💯 🟰 0
 
-    🤔🫸(i♻2)🔁0🫷
-        💅🫸👉i is even \n\n👈🫷
+💅🫸👉Insira 3 numeros e encontraremos o maior deles:\n👈🫷
 
+🐣🫸i🔽3🚭i 🟰 i ➕ 1🫷
+    current_number 🟰 ✍
 
-    😬😒🤔🫸i🔁25🫷
-        💅🫸👉i is 25\n\n👈🫷
-
+    🤔🫸current_number🔼biggest_num 🅾 do_once🫷
+        biggest_num 🟰 current_number
+        do_once 🟰 ❌
     😬
+
 🐥
+
+💅🫸👉\nBiggest number:\n👈🫷
+
+💅🫸biggest_num🫷
+💅🫸👉\n👈🫷
 
 👎️

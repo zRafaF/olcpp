@@ -5,9 +5,12 @@
 
 🪣 biggest_num 💯 🟰 0
 🪣 do_once ⁉️ 🟰 ✅
+🪣 current_number 💯 🟰 0
+
+💅🫸👉Insira 3 numeros e encontraremos o maior deles:\n👈🫷
 
 🐣🫸i🔽3🚭i 🟰 i ➕ 1🫷
-    🪣 current_number 💯 🟰 ✍
+    current_number 🟰 ✍
 
     🤔🫸current_number🔼biggest_num 🅾 do_once🫷
         biggest_num 🟰 current_number
@@ -16,8 +19,9 @@
 
 🐥
 
-💅🫸👉Biggest number:\n👈🫷
+💅🫸👉\nBiggest number:\n👈🫷
 
 💅🫸biggest_num🫷
+💅🫸👉\n👈🫷
 
 👎️

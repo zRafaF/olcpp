@@ -47,6 +47,10 @@ std::vector<std::shared_ptr<Code>> parseNodeInstructions(IRNode node, db_s* db) 
             code = std::make_shared<GenIf>(db);
         }
 
+        else if (instruction == "OR") {
+            code = std::make_shared<GenOr>(db);
+        }
+
         else if (instruction == "INTEGER_MODULUS") {
             code = std::make_shared<GenIntegerModulus>(db);
         }
