@@ -13,12 +13,12 @@ label begin_for_0
 
 less %t0, %r7, %r0
 jf %t0, end_for_1
-
-add %t1, %r7, 1
-mov %r7, %t1
 read %r6
 
 store %r6, %r7(%r1)
+
+add %t1, %r7, 1
+mov %r7, %t1
 jump begin_for_0
 label end_for_1
 mov %r7 0
@@ -29,12 +29,12 @@ label begin_for_2
 
 less %t0, %r7, %r0
 jf %t0, end_for_3
-
-add %t1, %r7, 1
-mov %r7, %t1
 load %r8, %r7(%r1)
 printv %r8
 printf ", "
+
+add %t1, %r7, 1
+mov %r7, %t1
 jump begin_for_2
 label end_for_3
 mov %r7 1
@@ -48,9 +48,9 @@ label begin_for_4
 
 less %t0, %r7, %r0
 jf %t0, end_for_5
-
-add %t1, %r7, 1
-mov %r7, %t1
+printf "\nI:    "
+printv %r7
+printf "\n"
 load %r10, %r7(%r1)
 
 sub %t1, %r7, 1
@@ -60,9 +60,6 @@ label begin_for_6
 
 greatereq %t1, %r9, 0
 jf %t1, end_for_7
-
-sub %t2, %r9, 1
-mov %r9, %t2
 load %r13, %r9(%r1)
 
 label begin_if_8
@@ -79,6 +76,9 @@ label else_if_9
 sub %t3, 0, 1
 mov %r9, %t3
 label end_if_10
+
+sub %t3, %r9, 1
+mov %r9, %t3
 jump begin_for_6
 label end_for_7
 
@@ -86,6 +86,9 @@ add %t2, %r9, 1
 mov %r11, %t2
 
 store %r10, %r11(%r1)
+
+add %t2, %r7, 1
+mov %r7, %t2
 jump begin_for_4
 label end_for_5
 printf "\nVetor de saida: "
@@ -95,11 +98,11 @@ label begin_for_11
 
 less %t1, %r7, %r0
 jf %t1, end_for_12
-
-add %t2, %r7, 1
-mov %r7, %t2
 load %r8, %r7(%r1)
 printv %r8
 printf ", "
+
+add %t2, %r7, 1
+mov %r7, %t2
 jump begin_for_11
 label end_for_12

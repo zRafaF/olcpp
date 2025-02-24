@@ -668,6 +668,9 @@ class GenForLoop : public Code {
         // Jump out if condition is no longer met
         instructions.push_back(std::make_shared<Code>(dataBase, "jf %t" + std::to_string(dataBase->temporaryArray.size() - 1) + ", " + endLabelStr));
 
+        // Parse the for loop
+        appendVectors(instructions, parseNodeInstructions(element.value().next().next(), dataBase));
+
         // For assignment
         IRNode assignmentNode = element.value().next();
 
@@ -675,9 +678,6 @@ class GenForLoop : public Code {
             semanticError("Invalid for assignment");
 
         appendVectors(instructions, parseNodeInstructions(assignmentNode.value(), dataBase));
-
-        // Parse the for loop
-        appendVectors(instructions, parseNodeInstructions(assignmentNode.next(), dataBase));
 
         // Loop back
         instructions.push_back(std::make_shared<Code>(dataBase, "jump " + startLabelStr));
