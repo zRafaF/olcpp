@@ -1,108 +1,21 @@
-mov %r0 5
-
-mov %r1 1
-mov %r2 2
-mov %r3 3
-mov %r4 4
-mov %r5 5
-mov %r6 0
-mov %r7 0
-printf "Insira os números do vetor:\n"
-
-label begin_for_0
-
-less %t0, %r7, %r0
-jf %t0, end_for_1
-read %r6
-
-store %r6, %r7(%r1)
-
-add %t1, %r7, 1
-mov %r7, %t1
-jump begin_for_0
-label end_for_1
-mov %r7 0
-mov %r8 0
-printf "\nVetor de entrada: "
-
-label begin_for_2
-
-less %t0, %r7, %r0
-jf %t0, end_for_3
-load %r8, %r7(%r1)
-printv %r8
-printf ", "
-
-add %t1, %r7, 1
-mov %r7, %t1
-jump begin_for_2
-label end_for_3
-mov %r7 1
-mov %r9 0
-mov %r10 0
-mov %r11 0
-mov %r12 0
-mov %r13 0
-
-label begin_for_4
-
-less %t0, %r7, %r0
-jf %t0, end_for_5
-printf "\nI:    "
-printv %r7
+mov %r0 0
+printf "Insira o número máximo: "
+read %r0
+mov %r1 0
+mov %r2 1
+mov %r3 0
+printv %r1
 printf "\n"
-load %r10, %r7(%r1)
 
-sub %t1, %r7, 1
-mov %r9, %t1
+label begin_while_0
+lesseq %t0, %r2, %r0
+jf %t0, end_while_1
+printv %r2
+printf "\n"
 
-label begin_for_6
-
-greatereq %t1, %r9, 0
-jf %t1, end_for_7
-load %r13, %r9(%r1)
-
-label begin_if_8
-greater %t2, %r13, %r10
-jf %t2, else_if_9
-
-add %t3, %r9, 1
-mov %r11, %t3
-
-store %r13, %r11(%r1)
-jump end_if_10
-label else_if_9
-
-sub %t3, 0, 1
-mov %r9, %t3
-label end_if_10
-
-sub %t3, %r9, 1
-mov %r9, %t3
-jump begin_for_6
-label end_for_7
-
-add %t2, %r9, 1
-mov %r11, %t2
-
-store %r10, %r11(%r1)
-
-add %t2, %r7, 1
-mov %r7, %t2
-jump begin_for_4
-label end_for_5
-printf "\nVetor de saida: "
-mov %r7 0
-
-label begin_for_11
-
-less %t1, %r7, %r0
-jf %t1, end_for_12
-load %r8, %r7(%r1)
-printv %r8
-printf ", "
-
-add %t2, %r7, 1
-mov %r7, %t2
-jump begin_for_11
-label end_for_12
+add %t1, %r1, %r2
+mov %r3, %t1
+mov %r1 %r2
+mov %r2 %r3
+jump begin_while_0
+label end_while_1
