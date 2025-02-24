@@ -335,7 +335,7 @@ for_loop:
 // While loop control flow, the while loop content is on the "value" parameter
 while_loop:
     WHILE_BEGIN condition e_o_l statement_list optional_end_of_lines WHILE_END{
-        $$ = createNode("WHILE_LOOP", createNode("WHILE", $2, $4), NULL);
+        $$ = createNode("WHILE_LOOP", createNode("CONDITION", $2, $4), NULL);
     }
     ;
 

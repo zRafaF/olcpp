@@ -61,39 +61,6 @@ class Code {
         return out;
     }
 
-    std::vector<std::shared_ptr<Code>> generateCommonInstructions(
-        IRNode element,
-        const std::string& operation) {
-        std::vector<std::shared_ptr<Code>> instructions;
-        condition_s condition = getConditions(dataBase, element);
-
-        std::string rdest;
-        std::string op1;
-        std::string op2;
-
-        if (std::holds_alternative<variable_s>(condition.left) || std::holds_alternative<int>(condition.left)) {
-            op1 = getAccessString(condition.left);
-        } else {
-            appendVectors(instructions, parseNodeInstructions(element.value(), dataBase));
-            op1 = "%t" + std::to_string(dataBase->temporaryArray.size() - 1);
-        }
-
-        if (std::holds_alternative<variable_s>(condition.right) || std::holds_alternative<int>(condition.right)) {
-            op2 = getAccessString(condition.right);
-        } else {
-            appendVectors(instructions, parseNodeInstructions(element.value().next(), dataBase));
-            op2 = "%t" + std::to_string(dataBase->temporaryArray.size() - 1);
-        }
-
-        size_t arraySize = dataBase->temporaryArray.size();
-        rdest = "%t" + std::to_string(arraySize);
-        dataBase->temporaryArray.push_back(variable_s(BOOL, 1, arraySize));
-
-        instructions.push_back(std::make_shared<Code>(dataBase, operation + " " + rdest + ", " + op1 + ", " + op2));
-
-        return instructions;
-    }
-
    public:
     Code(db_s* db) : dataBase(db) {
         assert(dataBase);
@@ -292,14 +259,34 @@ class GenLessThan : public Code {
     GenLessThan(db_s* db, std::string _output) : Code(db, _output) {};
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
+        std::vector<std::shared_ptr<Code>> instructions;
         condition = getConditions(dataBase, element);
 
+        std::string rdest;
+        std::string op1;
+        std::string op2;
+
+        if (std::holds_alternative<variable_s>(condition.left) || std::holds_alternative<int>(condition.left)) {
+            op1 = getAccessString(condition.left);
+        } else {
+            appendVectors(instructions, parseNodeInstructions(element.value(), dataBase));
+            op1 = "%t" + std::to_string(dataBase->temporaryArray.size() - 1);
+        }
+
+        if (std::holds_alternative<variable_s>(condition.right) || std::holds_alternative<int>(condition.right)) {
+            op2 = getAccessString(condition.right);
+        } else {
+            appendVectors(instructions, parseNodeInstructions(element.value().next(), dataBase));
+            op2 = "%t" + std::to_string(dataBase->temporaryArray.size() - 1);
+        }
+
         size_t arraySize = dataBase->temporaryArray.size();
+        rdest = "%t" + std::to_string(arraySize);
         dataBase->temporaryArray.push_back(variable_s(BOOL, 1, arraySize));
 
-        output = "less %t" + std::to_string(arraySize) + ", " + getAccessString(condition.left) + ", " + getAccessString(condition.right);
+        instructions.push_back(std::make_shared<Code>(dataBase, "less " + rdest + ", " + op1 + ", " + op2));
 
-        return {};
+        return instructions;
     }
 };
 
@@ -324,12 +311,42 @@ class GenLessThanEqual : public Code {
 };
 
 class GenEqual : public Code {
+   private:
+    condition_s condition;
+
    public:
     GenEqual(db_s* db) : Code(db) {}
     GenEqual(db_s* db, std::string _output) : Code(db, _output) {};
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
-        return generateCommonInstructions(element, "equal");
+        std::vector<std::shared_ptr<Code>> instructions;
+        condition = getConditions(dataBase, element);
+
+        std::string rdest;
+        std::string op1;
+        std::string op2;
+
+        if (std::holds_alternative<variable_s>(condition.left) || std::holds_alternative<int>(condition.left)) {
+            op1 = getAccessString(condition.left);
+        } else {
+            appendVectors(instructions, parseNodeInstructions(element.value(), dataBase));
+            op1 = "%t" + std::to_string(dataBase->temporaryArray.size() - 1);
+        }
+
+        if (std::holds_alternative<variable_s>(condition.right) || std::holds_alternative<int>(condition.right)) {
+            op2 = getAccessString(condition.right);
+        } else {
+            appendVectors(instructions, parseNodeInstructions(element.value().next(), dataBase));
+            op2 = "%t" + std::to_string(dataBase->temporaryArray.size() - 1);
+        }
+
+        size_t arraySize = dataBase->temporaryArray.size();
+        rdest = "%t" + std::to_string(arraySize);
+        dataBase->temporaryArray.push_back(variable_s(BOOL, 1, arraySize));
+
+        instructions.push_back(std::make_shared<Code>(dataBase, "equal " + rdest + ", " + op1 + ", " + op2));
+
+        return instructions;
     }
 };
 
@@ -374,22 +391,82 @@ class GenGreaterThan : public Code {
 };
 
 class GenGreaterThanEqual : public Code {
+   private:
+    condition_s condition;
+
    public:
     GenGreaterThanEqual(db_s* db) : Code(db) {}
     GenGreaterThanEqual(db_s* db, std::string _output) : Code(db, _output) {};
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
-        return generateCommonInstructions(element, "greatereq");
+        std::vector<std::shared_ptr<Code>> instructions;
+        condition = getConditions(dataBase, element);
+
+        std::string rdest;
+        std::string op1;
+        std::string op2;
+
+        if (std::holds_alternative<variable_s>(condition.left) || std::holds_alternative<int>(condition.left)) {
+            op1 = getAccessString(condition.left);
+        } else {
+            appendVectors(instructions, parseNodeInstructions(element.value(), dataBase));
+            op1 = "%t" + std::to_string(dataBase->temporaryArray.size() - 1);
+        }
+
+        if (std::holds_alternative<variable_s>(condition.right) || std::holds_alternative<int>(condition.right)) {
+            op2 = getAccessString(condition.right);
+        } else {
+            appendVectors(instructions, parseNodeInstructions(element.value().next(), dataBase));
+            op2 = "%t" + std::to_string(dataBase->temporaryArray.size() - 1);
+        }
+
+        size_t arraySize = dataBase->temporaryArray.size();
+        rdest = "%t" + std::to_string(arraySize);
+        dataBase->temporaryArray.push_back(variable_s(BOOL, 1, arraySize));
+
+        instructions.push_back(std::make_shared<Code>(dataBase, "greatereq " + rdest + ", " + op1 + ", " + op2));
+
+        return instructions;
     }
 };
 
 class GenOr : public Code {
+   private:
+    condition_s condition;
+
    public:
     GenOr(db_s* db) : Code(db) {}
     GenOr(db_s* db, std::string _output) : Code(db, _output) {};
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
-        return generateCommonInstructions(element, "or");
+        std::vector<std::shared_ptr<Code>> instructions;
+        condition = getConditions(dataBase, element);
+
+        std::string rdest;
+        std::string op1;
+        std::string op2;
+
+        if (std::holds_alternative<variable_s>(condition.left) || std::holds_alternative<int>(condition.left)) {
+            op1 = getAccessString(condition.left);
+        } else {
+            appendVectors(instructions, parseNodeInstructions(element.value(), dataBase));
+            op1 = "%t" + std::to_string(dataBase->temporaryArray.size() - 1);
+        }
+
+        if (std::holds_alternative<variable_s>(condition.right) || std::holds_alternative<int>(condition.right)) {
+            op2 = getAccessString(condition.right);
+        } else {
+            appendVectors(instructions, parseNodeInstructions(element.value().next(), dataBase));
+            op2 = "%t" + std::to_string(dataBase->temporaryArray.size() - 1);
+        }
+
+        size_t arraySize = dataBase->temporaryArray.size();
+        rdest = "%t" + std::to_string(arraySize);
+        dataBase->temporaryArray.push_back(variable_s(BOOL, 1, arraySize));
+
+        instructions.push_back(std::make_shared<Code>(dataBase, "or " + rdest + ", " + op1 + ", " + op2));
+
+        return instructions;
     }
 };
 
@@ -429,6 +506,45 @@ class GenForLoop : public Code {
 
         // Parse the for loop
         appendVectors(instructions, parseNodeInstructions(assignmentNode.next(), dataBase));
+
+        // Loop back
+        instructions.push_back(std::make_shared<Code>(dataBase, "jump " + startLabelStr));
+
+        // End label
+        instructions.push_back(std::make_shared<Code>(dataBase, "label " + endLabelStr));
+
+        // Clearing the stack
+        dataBase->temporaryArray.pop_back();
+
+        return instructions;
+    }
+};
+
+class GenWhileLoop : public Code {
+   public:
+    GenWhileLoop(db_s* db) : Code(db) {}
+    GenWhileLoop(db_s* db, std::string _output) : Code(db, _output) {};
+
+    std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
+        std::vector<std::shared_ptr<Code>> instructions;
+
+        std::string startLabelStr = "begin_while_" + std::to_string(dataBase->labelCounter);
+        dataBase->labelCounter++;
+        std::string endLabelStr = "end_while_" + std::to_string(dataBase->labelCounter);
+        dataBase->labelCounter++;
+
+        // Begin label
+        instructions.push_back(std::make_shared<Code>(dataBase, "label " + startLabelStr));
+
+        // condition
+        IRNode condition = element.value().value();
+        appendVectors(instructions, parseNodeInstructions(condition, dataBase));
+
+        // Jump out if condition is no longer met
+        instructions.push_back(std::make_shared<Code>(dataBase, "jf %t" + std::to_string(dataBase->temporaryArray.size() - 1) + ", " + endLabelStr));
+
+        // Parse the while loop
+        appendVectors(instructions, parseNodeInstructions(element.value().next(), dataBase));
 
         // Loop back
         instructions.push_back(std::make_shared<Code>(dataBase, "jump " + startLabelStr));

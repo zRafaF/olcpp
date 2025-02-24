@@ -28,6 +28,7 @@ condition_s getConditions(db_s* dataBase, IRNode element) {
 
     if (rightNode.instruction() == "VARIABLE") {
         checkVariableExists(rightNode.value().instruction(), dataBase);
+
         returnCondition.right = dataBase->variablesMap.at(rightNode.value().instruction());
     } else if (rightNode.instruction() == "CONSTANT") {
         returnCondition.right = std::stoi(rightNode.value().instruction());

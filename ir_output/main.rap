@@ -1,27 +1,22 @@
 mov %r0 0
+printf "Insira o número máximo: "
+read %r0
 mov %r1 0
 mov %r2 1
 mov %r3 0
-printf "Insira 3 numeros e encontraremos o maior deles:\n"
-
-label begin_for_0
-less %t0, %r0, 3
-jf %t0, end_for_1
-
-add %t1, %r0, 1
-mov %r0, %t1
-read %r3
-
-label begin_if_2
-
-greater %t1, %r3, %r1
-or %t2, %t1, %r2
-jf %t2, end_if_3
-mov %r1 %r3
-mov %r2 0
-label end_if_3
-jump begin_for_0
-label end_for_1
-printf "\nBiggest number:\n"
 printv %r1
 printf "\n"
+
+label begin_while_0
+
+less %t0, %r2, %r0
+jf %t0, end_while_1
+printv %r2
+printf "\n"
+
+add %t1, %r1, %r2
+mov %r3, %t1
+mov %r1 %r2
+mov %r2 %r3
+jump begin_while_0
+label end_while_1
