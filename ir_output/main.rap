@@ -1,22 +1,37 @@
-mov %r0 0
-printf "Insira o número máximo: "
-read %r0
+mov %r0 5
+
 mov %r1 0
-mov %r2 1
+mov %r2 0
 mov %r3 0
-printv %r1
-printf "\n"
+mov %r4 0
+mov %r5 0
+mov %r6 0
+mov %r7 0
+printf "Insira os números do vetor:\n"
 
-label begin_while_0
+label begin_for_0
 
-less %t0, %r2, %r0
-jf %t0, end_while_1
-printv %r2
-printf "\n"
+less %t0, %r7, %r0
+jf %t0, end_for_1
 
-add %t1, %r1, %r2
-mov %r3, %t1
-mov %r1 %r2
-mov %r2 %r3
-jump begin_while_0
-label end_while_1
+add %t1, %r7, 1
+mov %r7, %t1
+read %r6
+jump begin_for_0
+label end_for_1
+mov %r7 0
+mov %r8 0
+printf "\nVetor: "
+
+label begin_for_2
+
+less %t0, %r7, %r0
+jf %t0, end_for_3
+
+add %t1, %r7, 1
+mov %r7, %t1
+load %r8, 0(%r1)
+printv %r8
+printf ", "
+jump begin_for_2
+label end_for_3

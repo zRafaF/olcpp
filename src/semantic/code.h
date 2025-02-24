@@ -228,6 +228,16 @@ class GenAssign : public Code {
             dataBase->temporaryArray.pop_back();
         } else if (valueType == "INPUT_STATEMENT") {
             output = "read %r" + std::to_string(target.offset);
+        } else if (valueType == "ACCESS_ARRAY") {
+            std::string arrayName = element.value().value().value().instruction();
+            checkVariableExists(arrayName, dataBase);
+            variable_s array = dataBase->variablesMap.at(arrayName);
+            if (array.type != INT_ARRAY) {
+                semanticError("Tried to access an array from a non array variable");
+            }
+            std::string index = element.value().value().value().value().instruction();
+
+            output = "load %r" + std::to_string(target.offset) + ", " + index + "(%r" + std::to_string(array.offset) + ")";
         }
 
         else {
