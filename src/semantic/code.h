@@ -113,6 +113,8 @@ class GenVariableDeclaration : public Code {
         } else if (valueType == "VARIABLE") {
             checkVariableExists(value, dataBase);
             output = generateVariableAssignment(newVar, dataBase->variablesMap.at(value));
+        } else if (valueType == "INT_ARRAY_TYPE") {
+            // TODO IMPLEMENT
         } else {
             semanticError("Invalid value type");
         }
