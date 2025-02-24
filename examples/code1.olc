@@ -19,11 +19,17 @@ i 🟰 a2
     💅🫸👉\n👈🫷
 
     🤔🫸(i♻2)🔁0🫷
-        💅🫸👉i e par👈🫷
+        💅🫸👉i e par \n👈🫷
 
 
     😬😒🤔🫸i🔁25🫷
         💅🫸👉i e igual a 25👈🫷
+
+    😬😒🤔🫸i🔽a2🫷
+        💅🫸👉i e menor que a2👈🫷
+
+    😬😒
+        💅🫸👉else👈🫷
 
     😬
 🐥

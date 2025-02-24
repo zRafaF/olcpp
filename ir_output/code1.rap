@@ -18,12 +18,26 @@ mov %r1034 0
 printf "Hello World \n"
 
 label begin_for_0
-diff %t0, %r1, 45
+less %t0, %r1, 45
 jf %t0, end_for_1
 
 add %t1, %r1, 1
 mov %r1, %t1
 printv %r1
 printf "\n"
+
+
+
+
+mod %t1, %r1, 2
+equal %t2, %t1, 0
+jf %t2, end_if_6
+label end_if_6
+printf "i e par \n"
+jf %t1, begin_else_3
+printf "i e par \n"
+jump end_if_else_4
+label begin_else_3
+label end_if_else_4
 jump begin_for_0
 label end_for_1

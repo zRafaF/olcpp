@@ -66,6 +66,7 @@
     "nounput",
     "perror",
     "raposeitor",
+    "rdest",
     "stdbool",
     "strdup",
     "yyerror",

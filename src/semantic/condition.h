@@ -8,8 +8,8 @@
 #include "variable.h"
 
 struct condition_s {
-    std::variant<variable_s, int> left;
-    std::variant<variable_s, int> right;
+    std::variant<std::monostate, variable_s, int> left;
+    std::variant<std::monostate, variable_s, int> right;
 };
 
 condition_s getConditions(db_s* dataBase, IRNode element) {
@@ -21,7 +21,7 @@ condition_s getConditions(db_s* dataBase, IRNode element) {
     } else if (element.value().instruction() == "CONSTANT") {
         returnCondition.left = std::stoi(element.value().value().instruction());
     } else {
-        semanticError("Invalid left operand");
+        returnCondition.left = std::monostate();
     }
 
     IRNode rightNode = element.next();
@@ -32,13 +32,13 @@ condition_s getConditions(db_s* dataBase, IRNode element) {
     } else if (rightNode.instruction() == "CONSTANT") {
         returnCondition.right = std::stoi(rightNode.value().instruction());
     } else {
-        semanticError("Invalid right operand");
+        returnCondition.right = std::monostate();
     }
 
     return returnCondition;
 }
 
-std::string getAccessString(std::variant<variable_s, int> val) {
+std::string getAccessString(std::variant<std::monostate, variable_s, int> val) {
     if (std::holds_alternative<variable_s>(val)) {
         return "%r" + std::to_string(std::get<variable_s>(val).offset);
     } else {

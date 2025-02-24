@@ -26,7 +26,9 @@ std::vector<std::shared_ptr<Code>> parseNodeInstructions(IRNode node, db_s* db) 
             code = std::make_shared<GenPrintStatement>(db);
         } else if (instruction == "FOR_LOOP") {
             code = std::make_shared<GenForLoop>(db);
-        } else if (instruction == "LESS_THAN") {
+        }
+
+        else if (instruction == "LESS_THAN") {
             code = std::make_shared<GenLessThan>(db);
         } else if (instruction == "LESS_THAN_EQUAL") {
             code = std::make_shared<GenLessThanEqual>(db);
@@ -38,6 +40,16 @@ std::vector<std::shared_ptr<Code>> parseNodeInstructions(IRNode node, db_s* db) 
             code = std::make_shared<GenGreaterThan>(db);
         } else if (instruction == "GREATER_THAN_EQUAL") {
             code = std::make_shared<GenGreaterThanEqual>(db);
+        }
+
+        else if (instruction == "IF") {
+            code = std::make_shared<GenIf>(db);
+        } else if (instruction == "IF_ELSE_CONDITION") {
+            code = std::make_shared<GenIfElseCondition>(db);
+        }
+
+        else if (instruction == "INTEGER_MODULUS") {
+            code = std::make_shared<GenIntegerModulus>(db);
         }
 
         if (code) {
