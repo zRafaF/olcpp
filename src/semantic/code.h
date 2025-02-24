@@ -438,110 +438,53 @@ class GenForLoop : public Code {
     }
 };
 
-class GenIf : public Code {
-   public:
-    GenIf(db_s* db) : Code(db) {}
-    GenIf(db_s* db, std::string _output) : Code(db, _output) {}
-
-    std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
-        std::vector<std::shared_ptr<Code>> instructions;
-        std::string endLabelStr = "end_if_" + std::to_string(dataBase->labelCounter);
-        dataBase->labelCounter++;
-
-        // Condition Check
-        IRNode condition = element.value();
-        appendVectors(instructions, parseNodeInstructions(condition, dataBase));
-
-        // Jump out if condition is not met
-        instructions.push_back(std::make_shared<Code>(dataBase, "jf %t" + std::to_string(dataBase->temporaryArray.size() - 1) + ", " + endLabelStr));
-
-        // If Block
-        appendVectors(instructions, parseNodeInstructions(condition.next(), dataBase));
-
-        // End label
-        instructions.push_back(std::make_shared<Code>(dataBase, "label " + endLabelStr));
-
-        // Clear Temporary Stack
-        dataBase->temporaryArray.pop_back();
-
-        return instructions;
-    }
-};
-
-class GenElseIfCondition : public Code {
-   public:
-    GenElseIfCondition(db_s* db) : Code(db) {}
-    GenElseIfCondition(db_s* db, std::string _output) : Code(db, _output) {}
-
-    std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
-        std::vector<std::shared_ptr<Code>> instructions;
-        std::string nextConditionLabel = "next_condition_" + std::to_string(dataBase->labelCounter);
-        dataBase->labelCounter++;
-        std::string endLabelStr = "end_else_if_" + std::to_string(dataBase->labelCounter);
-        dataBase->labelCounter++;
-
-        // Condition Check
-        IRNode condition = element.value().next();
-        appendVectors(instructions, parseNodeInstructions(condition.value(), dataBase));
-
-        // Jump to next condition if not met
-        instructions.push_back(std::make_shared<Code>(dataBase, "jf %t" + std::to_string(dataBase->temporaryArray.size() - 1) + ", " + nextConditionLabel));
-
-        // If Block
-        appendVectors(instructions, parseNodeInstructions(condition.next(), dataBase));
-
-        // Jump to End
-        instructions.push_back(std::make_shared<Code>(dataBase, "jump " + endLabelStr));
-
-        // Next Condition Label
-        instructions.push_back(std::make_shared<Code>(dataBase, "label " + nextConditionLabel));
-
-        // End Label
-        instructions.push_back(std::make_shared<Code>(dataBase, "label " + endLabelStr));
-
-        // Clear Temporary Stack
-        dataBase->temporaryArray.pop_back();
-
-        return instructions;
-    }
-};
-
 class GenIfElseCondition : public Code {
    public:
     GenIfElseCondition(db_s* db) : Code(db) {}
-    GenIfElseCondition(db_s* db, std::string _output) : Code(db, _output) {}
+    GenIfElseCondition(db_s* db, std::string _output) : Code(db, _output) {};
 
     std::vector<std::shared_ptr<Code>> generate(IRNode element) override {
         std::vector<std::shared_ptr<Code>> instructions;
-        std::string elseLabelStr = "begin_else_" + std::to_string(dataBase->labelCounter);
+
+        if (element.value().instruction() != "IF")
+            semanticError("Invalid if condition");
+
+        std::string startLabelStr = "begin_if_" + std::to_string(dataBase->labelCounter);
         dataBase->labelCounter++;
-        std::string endLabelStr = "end_if_else_" + std::to_string(dataBase->labelCounter);
+        std::string elseLabelStr = "else_if_" + std::to_string(dataBase->labelCounter);
+        dataBase->labelCounter++;
+        std::string endLabelStr = "end_if_" + std::to_string(dataBase->labelCounter);
         dataBase->labelCounter++;
 
-        // Condition Check
-        IRNode condition = element.value();
+        // Begin label
+        instructions.push_back(std::make_shared<Code>(dataBase, "label " + startLabelStr));
+
+        // condition
+        IRNode condition = element.value().value().value();
         appendVectors(instructions, parseNodeInstructions(condition, dataBase));
 
-        // Jump to else if not met
+        // Jump to else if condition is not met
         instructions.push_back(std::make_shared<Code>(dataBase, "jf %t" + std::to_string(dataBase->temporaryArray.size() - 1) + ", " + elseLabelStr));
 
-        // If Block
-        appendVectors(instructions, parseNodeInstructions(condition.next(), dataBase));
+        // Parse the if block
 
-        // Jump to End
+        IRNode ifBlock = element.value().value().next();
+
+        appendVectors(instructions, parseNodeInstructions(ifBlock, dataBase));
+
+        // Jump to end
         instructions.push_back(std::make_shared<Code>(dataBase, "jump " + endLabelStr));
 
-        // Else Label
+        // Else label
         instructions.push_back(std::make_shared<Code>(dataBase, "label " + elseLabelStr));
 
-        // Else Block
-        appendVectors(instructions, parseNodeInstructions(condition.next().next(), dataBase));
+        // Parse the else block
+        IRNode elseBlock = element.value().next().value();
 
-        // End Label
+        appendVectors(instructions, parseNodeInstructions(elseBlock, dataBase));
+
+        // End label
         instructions.push_back(std::make_shared<Code>(dataBase, "label " + endLabelStr));
-
-        // Clear Temporary Stack
-        dataBase->temporaryArray.pop_back();
 
         return instructions;
     }

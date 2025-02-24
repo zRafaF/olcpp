@@ -9,14 +9,25 @@ mov %r0, %t1
 printv %r0
 printf "\n"
 
+label begin_if_2
 
+
+mod %t1, %r0, 2
+equal %t2, %t1, 0
+jf %t2, else_if_3
 printf "i is even \n"
-jf %t0, end_if_4
-printf "i is even \n"
+jump end_if_4
+label else_if_3
+
+label begin_if_5
+
+equal %t3, %r0, 25
+jf %t3, else_if_6
+printf "i is 25\n"
+jump end_if_7
+label else_if_6
+printf "else\n"
+label end_if_7
 label end_if_4
-jf %t18446744073709551615, begin_else_2
-jump end_if_else_3
-label begin_else_2
-label end_if_else_3
 jump begin_for_0
 label end_for_1
