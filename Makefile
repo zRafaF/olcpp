@@ -26,13 +26,13 @@ OUTPUT = $(BUILD_DIR)/parser
 GENERATOR_OUTPUT = $(BUILD_DIR)/generator
 
 # Input files
-INPUT := examples/code1.olc
+INPUT := examples/main.olc
 
 # Intermediate Representation output
-IR_OUTPUT := ir_output/code1.json
+IR_OUTPUT := ir_output/main.json
 
 # Assembly output
-ASM_OUTPUT := ir_output/code1.rap
+ASM_OUTPUT := ir_output/main.rap
 
 # Echo colors
 COLOR_GREEN=\033[0;32m

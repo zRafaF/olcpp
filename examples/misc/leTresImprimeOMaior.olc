@@ -1,0 +1,23 @@
+👍️
+
+🪣 i 💯 🟰 0
+
+
+🪣 biggest_num 💯 🟰 0
+🪣 do_once ⁉️ 🟰 ✅
+
+🐣🫸i🔽3🚭i 🟰 i ➕ 1🫷
+    🪣 current_number 💯 🟰 ✍
+
+    🤔🫸current_number🔼biggest_num 🅾 do_once🫷
+        biggest_num 🟰 current_number
+        do_once 🟰 ❌
+    😬
+
+🐥
+
+💅🫸👉Biggest number:\n👈🫷
+
+💅🫸biggest_num🫷
+
+👎️
